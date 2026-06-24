@@ -4,7 +4,7 @@ import { Fragment, useMemo, useState } from "react"
 import {
   AlertTriangle, TrendingDown, TrendingUp, Search, X, Target, Trophy, 
   Activity, ArrowLeft, FileText, Users, CheckCircle2, AlertOctagon,
-  ChevronDown, ChevronUp, BarChart3, Grid3X3, Image as ImageIcon, FileDown,
+  ChevronDown, ChevronUp, BarChart3, Grid3X3, Image as ImageIcon,
 } from "lucide-react"
 import {
   ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
@@ -16,6 +16,7 @@ import {
 } from "@/lib/audit-data"
 import type { Q2Dashboard } from "@/lib/q2-data"
 import { buildDiagnosis } from "@/lib/dashboard/diagnosis"
+import ReportActionPanel from "@/components/dashboard/ReportActionPanel"
 import HallazgosTab from "@/components/dashboard/tabs/HallazgosTab"
 import AuditoresTab from "@/components/dashboard/tabs/AuditoresTab"
 import EvolucionTab from "@/components/dashboard/tabs/EvolucionTab"
@@ -865,7 +866,7 @@ function Detail({ d, network, onClose, dashboard }: { d: Derived; network: Retur
               <FileText className="h-5 w-5" />
               Descargar Informe PDF
             </a>
-            <ReportActionPlaceholder />
+            <ReportActionPanel auditId={d.loc.auditId ?? null} />
           </div>
         </div>
       </aside>
@@ -873,19 +874,3 @@ function Detail({ d, network, onClose, dashboard }: { d: Derived; network: Retur
   )
 }
 
-// Disabled DOCX export. The generation pipeline is not wired yet; this keeps the
-// affordance visible without faking a download.
-function ReportActionPlaceholder() {
-  return (
-    <button
-      type="button"
-      disabled
-      title="La exportación a Word estará disponible próximamente"
-      className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-lg border border-gray-200 bg-gray-50 py-3 text-sm font-medium text-gray-400"
-    >
-      <FileDown className="h-4 w-4" />
-      Exportar a Word (DOCX)
-      <span className="rounded-full bg-gray-200 px-1.5 py-0.5 text-[10px] uppercase text-gray-500">Próximamente</span>
-    </button>
-  )
-}

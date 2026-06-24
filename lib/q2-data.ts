@@ -59,6 +59,55 @@ type AuditRow = {
  * Location shape the dashboard already consumes. No scores are recalculated:
  * salon/cocina/calidad/global come directly from the stored audit row.
  */
+export type PendingLocation = { id: string; name: string }
+
+export type Q2Dashboard = {
+  audited: Location[]
+  universe: number // expected locations (non-test) in the network
+  pending: PendingLocation[]
+  coverage: number // 0-100
+  scope: "Lectura preliminar" | "Lectura parcial" | "Lectura representativa" | "Trimestre completo"
+  periodStatus: "En curso" | "Cerrado"
+  lastUpdated: string
+}
+
+function scopeFor(coverage: number): Q2Dashboard["scope"] {
+  if (coverage >= 100) return "Trimestre completo"
+  if (coverage >= 70) return "Lectura representativa"
+  if (coverage >= 35) return "Lectura parcial"
+  return "Lectura preliminar"
+}
+
+/**
+ * Full dashboard payload: audited locales (real Supabase scores), the expected
+ * universe of locations, pending ones, and coverage classification.
+ */
+export async function getQ2Dashboard(quarter = "Q2"): Promise<Q2Dashboard> {
+  const audited = await getQ2Locations(quarter)
+
+  // Universe = all non-test locations in the network.
+  const { data: locs } = await supabase.from("locations").select("id, name")
+  const universeLocs = (locs ?? []).filter((l) => !isExcludedLocation(l.name))
+  const universe = universeLocs.length || audited.length
+  const auditedIds = new Set(audited.map((a) => a.id))
+  const pending: PendingLocation[] = universeLocs
+    .filter((l) => !auditedIds.has(l.id))
+    .map((l) => ({ id: l.id, name: l.name }))
+    .sort((a, b) => a.name.localeCompare(b.name))
+
+  const coverage = universe > 0 ? +((audited.length / universe) * 100).toFixed(1) : 0
+
+  return {
+    audited,
+    universe,
+    pending,
+    coverage,
+    scope: scopeFor(coverage),
+    periodStatus: coverage >= 100 ? "Cerrado" : "En curso",
+    lastUpdated: new Date().toLocaleString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }),
+  }
+}
+
 export async function getQ2Locations(quarter = "Q2"): Promise<Location[]> {
   // 1. Locations map (id -> name)
   const { data: locs } = await supabase.from("locations").select("id, name")

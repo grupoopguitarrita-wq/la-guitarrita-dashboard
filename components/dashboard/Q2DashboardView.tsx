@@ -8,12 +8,22 @@ import {
 } from "lucide-react"
 import {
   ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
+  PieChart, Pie, Cell,
 } from "recharts"
 import {
   computeNetwork, computeDerived, AREA_LABEL,
-  type Derived, type Tier, type AreaKey, type Location,
+  type Derived, type Tier, type AreaKey,
 } from "@/lib/audit-data"
+import type { Q2Dashboard } from "@/lib/q2-data"
+import { buildDiagnosis } from "@/lib/dashboard/diagnosis"
 import Link from "next/link"
+
+const BAND_COLORS = {
+  excelencia: "#2E7D32",
+  alerta: "#D97706",
+  critico: "#C62828",
+  satisfactorio: "#2563EB",
+}
 
 const tierClass: Record<Tier, string> = {
   EXCELENTE: "text-emerald-700 border-emerald-500/40 bg-emerald-50",
@@ -51,8 +61,8 @@ function heatCell(v: number) {
   return { bg: "#fee2e2", text: "#991b1b" }
 }
 
-export default function Q2DashboardView({ data }: { data: Location[] }) {
-  const ALL = data
+export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard }) {
+  const ALL = dashboard.audited
   const [search, setSearch] = useState("")
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [tab, setTab] = useState<"heatmap" | "ranking">("heatmap")
@@ -119,6 +129,17 @@ export default function Q2DashboardView({ data }: { data: Location[] }) {
   const worst = sorted[sorted.length - 1]
   const gap = best.loc.global - worst.loc.global
 
+  // Band distribution (audited only; no empty/pending segments)
+  const bandData = [
+    { name: "Excelencia", range: "90-100", count: derivedAll.filter(d => d.loc.global >= 90).length, color: BAND_COLORS.excelencia },
+    { name: "Satisfactorio", range: "80-89", count: derivedAll.filter(d => d.loc.global >= 80 && d.loc.global < 90).length, color: BAND_COLORS.satisfactorio },
+    { name: "En alerta", range: "70-79", count: derivedAll.filter(d => d.loc.global >= 70 && d.loc.global < 80).length, color: BAND_COLORS.alerta },
+    { name: "Crítico", range: "<70", count: derivedAll.filter(d => d.loc.global < 70).length, color: BAND_COLORS.critico },
+  ].filter(b => b.count > 0)
+
+  // Deterministic executive diagnosis
+  const diagnosis = buildDiagnosis(derivedAll, network, dashboard.coverage, dashboard.scope)
+
   const toggleExpand = (id: string) => {
     const next = new Set(expandedRows)
     if (next.has(id)) next.delete(id)
@@ -137,14 +158,51 @@ export default function Q2DashboardView({ data }: { data: Location[] }) {
               <span className="text-sm hidden sm:inline">Volver</span>
             </Link>
             <div className="h-5 w-px bg-gray-300" />
-            <h1 className="text-lg font-bold text-red-600">Pizarra - Dashboard Q2 2026</h1>
+            <div>
+              <h1 className="text-lg font-bold" style={{ color: "#B5123F" }}>Pizarra de Auditorías Trimestrales</h1>
+              <p className="text-[11px] text-gray-500">Q2 2026 · Actualizado {dashboard.lastUpdated}</p>
+            </div>
           </div>
-          <div className="text-xs text-gray-500">{totalLocales} locales auditados</div>
+          <div className="flex items-center gap-3">
+            <span className={`rounded-full border px-2.5 py-1 text-xs font-medium ${dashboard.periodStatus === "Cerrado" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>
+              {dashboard.periodStatus}
+            </span>
+            <span className="text-xs text-gray-500 hidden sm:inline">{totalLocales} de {dashboard.universe} auditados</span>
+          </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">
-        
+
+        {/* COBERTURA DEL TRIMESTRE */}
+        <div className="rounded-xl border border-gray-200 bg-white p-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">Cobertura del trimestre</h2>
+              <p className="text-xs text-gray-600">
+                {totalLocales} de {dashboard.universe} locales auditados · {dashboard.coverage}% de cobertura
+              </p>
+            </div>
+            <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700">
+              {dashboard.scope}
+            </span>
+          </div>
+          <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-gray-100">
+            <div className="h-full rounded-full" style={{ width: `${dashboard.coverage}%`, backgroundColor: "#B5123F" }} />
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div><div className="text-lg font-bold text-gray-900">{dashboard.universe}</div><div className="text-[11px] uppercase text-gray-500">Universo esperado</div></div>
+            <div><div className="text-lg font-bold text-emerald-600">{totalLocales}</div><div className="text-[11px] uppercase text-gray-500">Auditados válidos</div></div>
+            <div><div className="text-lg font-bold text-amber-600">{dashboard.pending.length}</div><div className="text-[11px] uppercase text-gray-500">Pendientes</div></div>
+            <div><div className="text-lg font-bold" style={{ color: "#B5123F" }}>{dashboard.coverage}%</div><div className="text-[11px] uppercase text-gray-500">Cobertura</div></div>
+          </div>
+          {dashboard.coverage < 100 && (
+            <p className="mt-3 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-800">
+              Los resultados representan a los locales auditados y no constituyen todavía una lectura definitiva de toda la red.
+            </p>
+          )}
+        </div>
+
         {/* KPIs con lenguaje humano */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Promedio de red */}
@@ -238,6 +296,59 @@ export default function Q2DashboardView({ data }: { data: Location[] }) {
             {compareA && compareB && <CompareView a={derivedAll.find(d => d.loc.id === compareA)!} b={derivedAll.find(d => d.loc.id === compareB)!} />}
           </div>
         )}
+
+        {/* Distribución por banda + Diagnóstico ejecutivo */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Dona distribución */}
+          <div className="lg:col-span-4 rounded-xl border border-gray-200 bg-white p-4">
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">Distribución por banda</h3>
+            <div className="relative h-[220px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={bandData} dataKey="count" nameKey="name" innerRadius={60} outerRadius={90} paddingAngle={2}>
+                    {bandData.map((b) => <Cell key={b.name} fill={b.color} />)}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-2xl font-bold text-gray-900">{totalLocales}</span>
+                <span className="text-[11px] text-gray-500">locales auditados</span>
+              </div>
+            </div>
+            <div className="mt-2 space-y-1.5">
+              {bandData.map((b) => (
+                <div key={b.name} className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: b.color }} />
+                    <span className="text-gray-700">{b.name}</span>
+                    <span className="text-gray-400">({b.range})</span>
+                  </span>
+                  <span className="text-gray-600">{b.count} · {Math.round((b.count / totalLocales) * 100)}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Diagnóstico ejecutivo */}
+          <div className="lg:col-span-8 rounded-xl border border-gray-200 bg-white p-4">
+            <h3 className="text-sm font-semibold text-gray-900">Diagnóstico ejecutivo</h3>
+            <p className="text-xs text-gray-500 mb-3">{diagnosis.scope}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <DiagBlock title="Situación general" items={diagnosis.generalSituation} color="#374151" />
+              <DiagBlock title="Fortalezas" items={diagnosis.strengths} color="#2E7D32" />
+              <DiagBlock title="Riesgos" items={diagnosis.risks} color="#C62828" />
+              <DiagBlock title="Implicancia operativa" items={diagnosis.operationalImplications} color="#D97706" />
+            </div>
+            {diagnosis.priorities.length > 0 && (
+              <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <div className="text-[11px] font-semibold uppercase text-gray-500 mb-1.5">Prioridades</div>
+                <ul className="space-y-1 text-sm text-gray-700">
+                  {diagnosis.priorities.map((p, i) => <li key={i}>{p}</li>)}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Intervenciones urgentes */}
         {requierenIntervencion.length > 0 && (
@@ -428,9 +539,42 @@ export default function Q2DashboardView({ data }: { data: Location[] }) {
             </table>
           </div>
         </div>
+
+        {/* LOCALES PENDIENTES DE AUDITORÍA */}
+        {dashboard.pending.length > 0 && (
+          <div className="rounded-xl border border-gray-200 bg-white p-4">
+            <h3 className="text-sm font-semibold text-gray-900">Locales pendientes de auditoría ({dashboard.pending.length})</h3>
+            <p className="text-xs text-gray-500 mb-3">Forman parte del universo del trimestre pero aún no registran auditoría Q2 2026.</p>
+            <div className="flex flex-wrap gap-2">
+              {dashboard.pending.map((p) => (
+                <span key={p.id} className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs text-gray-700">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                  {p.name}
+                  <span className="text-[10px] uppercase text-amber-600">Pendiente Q2</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
 
       {selected && <Detail d={selected} network={network} onClose={() => setSelectedId(null)} />}
+    </div>
+  )
+}
+
+function DiagBlock({ title, items, color }: { title: string; items: string[]; color: string }) {
+  return (
+    <div>
+      <div className="text-[11px] font-semibold uppercase mb-1.5" style={{ color }}>{title}</div>
+      <ul className="space-y-1 text-sm text-gray-700">
+        {items.map((t, i) => (
+          <li key={i} className="flex gap-1.5">
+            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+            <span>{t}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

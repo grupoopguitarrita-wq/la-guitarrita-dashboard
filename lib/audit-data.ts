@@ -49,6 +49,33 @@ export const AREAS: { key: AreaKey; label: string }[] = [
   { key: "calidad", label: "Calidad" },
 ];
 
+// ---- Official scoring bands (per spec) ----
+// <=75 crítico (rojo) · 76-84 alerta (ámbar) · 85-93 satisfactorio (verde) · 94+ excelencia (azul)
+export type Band = "critico" | "alerta" | "satisfactorio" | "excelencia";
+
+export interface BandInfo {
+  key: Band;
+  label: string;
+  range: string;
+  color: string; // solid hex for charts
+  bg: string; // light background
+  text: string; // readable text color
+}
+
+export const BANDS: BandInfo[] = [
+  { key: "excelencia", label: "Excelencia", range: "94-100", color: "#1D4ED8", bg: "#dbeafe", text: "#1e3a8a" },
+  { key: "satisfactorio", label: "Satisfactorio", range: "85-93", color: "#16A34A", bg: "#dcfce7", text: "#166534" },
+  { key: "alerta", label: "En alerta", range: "76-84", color: "#D97706", bg: "#fef3c7", text: "#92400e" },
+  { key: "critico", label: "Crítico", range: "≤75", color: "#DC2626", bg: "#fee2e2", text: "#991b1b" },
+];
+
+export function bandFor(score: number): BandInfo {
+  if (score >= 94) return BANDS[0];
+  if (score >= 85) return BANDS[1];
+  if (score >= 76) return BANDS[2];
+  return BANDS[3];
+}
+
 export type Balance = "Equilibrado" | "Leve desbalance" | "Desbalance crítico";
 
 export interface Derived {

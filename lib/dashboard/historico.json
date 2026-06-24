@@ -1,0 +1,492 @@
+[
+  {
+    "orden": 1,
+    "name": "Núñez",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 92,
+        "calidad": 95,
+        "salon": 98,
+        "global": 95
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 95,
+        "calidad": 100,
+        "salon": 100,
+        "global": 98
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 95,
+        "calidad": 96,
+        "salon": 97,
+        "global": 96
+      }
+    ]
+  },
+  {
+    "orden": 2,
+    "name": "Devoto",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q1 2026",
+        "cocina": 97,
+        "calidad": 92,
+        "salon": 94,
+        "global": 94
+      }
+    ]
+  },
+  {
+    "orden": 3,
+    "name": "Palermo",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 82,
+        "calidad": 95,
+        "salon": 80,
+        "global": 86
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 83,
+        "calidad": 90,
+        "salon": 80,
+        "global": 84
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 89,
+        "calidad": 98,
+        "salon": 86,
+        "global": 91
+      }
+    ]
+  },
+  {
+    "orden": 4,
+    "name": "Euskal",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 95,
+        "calidad": 95,
+        "salon": 81,
+        "global": 90
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 97,
+        "calidad": 95,
+        "salon": 94,
+        "global": 95
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 83,
+        "calidad": 94,
+        "salon": 93,
+        "global": 90
+      }
+    ]
+  },
+  {
+    "orden": 5,
+    "name": "Las Lomitas",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 79,
+        "calidad": 90,
+        "salon": 98,
+        "global": 89
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 90,
+        "calidad": 90,
+        "salon": 96,
+        "global": 92
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 90,
+        "calidad": 90,
+        "salon": 91,
+        "global": 90
+      }
+    ]
+  },
+  {
+    "orden": 6,
+    "name": "Caballito",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 68,
+        "calidad": 70,
+        "salon": 98,
+        "global": 79
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 92,
+        "calidad": 89,
+        "salon": 96,
+        "global": 92
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 81,
+        "calidad": 86,
+        "salon": 91,
+        "global": 86
+      }
+    ]
+  },
+  {
+    "orden": 7,
+    "name": "Villa Crespo",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 89,
+        "calidad": 95,
+        "salon": 79,
+        "global": 88
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 92,
+        "calidad": 95,
+        "salon": 93,
+        "global": 93
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 89,
+        "calidad": 88,
+        "salon": 85,
+        "global": 87
+      }
+    ]
+  },
+  {
+    "orden": 8,
+    "name": "Colegiales",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 46,
+        "calidad": 45,
+        "salon": 71,
+        "global": 54
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 81,
+        "calidad": 90,
+        "salon": 93,
+        "global": 88
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 80,
+        "calidad": 74,
+        "salon": 91,
+        "global": 82
+      }
+    ]
+  },
+  {
+    "orden": 9,
+    "name": "Maschwitz",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 80,
+        "calidad": 85,
+        "salon": 71,
+        "global": 79
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 77,
+        "calidad": 80,
+        "salon": 80,
+        "global": 79
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 75,
+        "calidad": 88,
+        "salon": 84,
+        "global": 82
+      }
+    ]
+  },
+  {
+    "orden": 10,
+    "name": "Olivos",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 71,
+        "calidad": 89,
+        "salon": 76,
+        "global": 79
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 70,
+        "calidad": 95,
+        "salon": 86,
+        "global": 84
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 87,
+        "calidad": 82,
+        "salon": 78,
+        "global": 82
+      }
+    ]
+  },
+  {
+    "orden": 11,
+    "name": "Dardo Rocha",
+    "alias": "San Isidro",
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 59,
+        "calidad": 95,
+        "salon": 83,
+        "global": 79
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 68,
+        "calidad": 95,
+        "salon": 84,
+        "global": 82
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 69,
+        "calidad": 85,
+        "salon": 89,
+        "global": 81
+      }
+    ]
+  },
+  {
+    "orden": 12,
+    "name": "Belgrano",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 49,
+        "calidad": 55,
+        "salon": 84,
+        "global": 63
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 82,
+        "calidad": 75,
+        "salon": 93,
+        "global": 83
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 80,
+        "calidad": 81,
+        "salon": 79,
+        "global": 80
+      }
+    ]
+  },
+  {
+    "orden": 13,
+    "name": "Nordelta",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 78,
+        "calidad": 85,
+        "salon": 83,
+        "global": 82
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 94,
+        "calidad": 90,
+        "salon": 84,
+        "global": 89
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 74,
+        "calidad": 90,
+        "salon": 73,
+        "global": 79
+      }
+    ]
+  },
+  {
+    "orden": 14,
+    "name": "Villa Urquiza",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 69,
+        "calidad": 70,
+        "salon": 78,
+        "global": 72
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 84,
+        "calidad": 73,
+        "salon": 84,
+        "global": 80
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 73,
+        "calidad": 76,
+        "salon": 89,
+        "global": 79
+      }
+    ]
+  },
+  {
+    "orden": 15,
+    "name": "Tigre",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 68,
+        "calidad": 35,
+        "salon": 70,
+        "global": 58
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 59,
+        "calidad": 60,
+        "salon": 82,
+        "global": 67
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 90,
+        "calidad": 51,
+        "salon": 92,
+        "global": 78
+      }
+    ]
+  },
+  {
+    "orden": 16,
+    "name": "Villa del Parque",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 90,
+        "calidad": 75,
+        "salon": 96,
+        "global": 87
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 89,
+        "calidad": 84,
+        "salon": 94,
+        "global": 89
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 88,
+        "calidad": 65,
+        "salon": 81,
+        "global": 78
+      }
+    ]
+  },
+  {
+    "orden": 17,
+    "name": "Las Cañitas",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 56,
+        "calidad": 35,
+        "salon": 80,
+        "global": 57
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 71,
+        "calidad": 58,
+        "salon": 85,
+        "global": 71
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 77,
+        "calidad": 74,
+        "salon": 74,
+        "global": 75
+      }
+    ]
+  },
+  {
+    "orden": 18,
+    "name": "Pilar",
+    "alias": null,
+    "quarters": [
+      {
+        "q": "Q3 2025",
+        "cocina": 74,
+        "calidad": 90,
+        "salon": 73,
+        "global": 79
+      },
+      {
+        "q": "Q4 2025",
+        "cocina": 63,
+        "calidad": 90,
+        "salon": 71,
+        "global": 75
+      },
+      {
+        "q": "Q1 2026",
+        "cocina": 72,
+        "calidad": 78,
+        "salon": 71,
+        "global": 74
+      }
+    ]
+  }
+]

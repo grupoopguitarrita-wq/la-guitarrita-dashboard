@@ -11,19 +11,16 @@ import {
   PieChart, Pie, Cell,
 } from "recharts"
 import {
-  computeNetwork, computeDerived, AREA_LABEL,
+  computeNetwork, computeDerived, AREA_LABEL, bandFor, BANDS,
   type Derived, type Tier, type AreaKey,
 } from "@/lib/audit-data"
 import type { Q2Dashboard } from "@/lib/q2-data"
 import { buildDiagnosis } from "@/lib/dashboard/diagnosis"
+import HallazgosTab from "@/components/dashboard/tabs/HallazgosTab"
+import AuditoresTab from "@/components/dashboard/tabs/AuditoresTab"
+import EvolucionTab from "@/components/dashboard/tabs/EvolucionTab"
+import EstadoDatosTab from "@/components/dashboard/tabs/EstadoDatosTab"
 import Link from "next/link"
-
-const BAND_COLORS = {
-  excelencia: "#2E7D32",
-  alerta: "#D97706",
-  critico: "#C62828",
-  satisfactorio: "#2563EB",
-}
 
 const tierClass: Record<Tier, string> = {
   EXCELENTE: "text-emerald-700 border-emerald-500/40 bg-emerald-50",
@@ -47,22 +44,19 @@ const riskBadge: Record<string, string> = {
   alto: "text-red-700 bg-red-50 border-red-200",
 }
 
+// Official bands: <=75 crítico · 76-84 alerta · 85-93 satisfactorio · 94+ excelencia
 function scoreColor(v: number) {
-  if (v >= 88) return "#16a34a"
-  if (v >= 75) return "#d97706"
-  if (v >= 65) return "#ea580c"
-  return "#dc2626"
+  return bandFor(v).color
 }
 
 function heatCell(v: number) {
-  if (v >= 88) return { bg: "#dcfce7", text: "#166534" }
-  if (v >= 75) return { bg: "#fef9c3", text: "#854d0e" }
-  if (v >= 65) return { bg: "#ffedd5", text: "#9a3412" }
-  return { bg: "#fee2e2", text: "#991b1b" }
+  const b = bandFor(v)
+  return { bg: b.bg, text: b.text }
 }
 
 export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard }) {
   const ALL = dashboard.audited
+  const [mainTab, setMainTab] = useState<"resumen" | "hallazgos" | "evolucion" | "auditores" | "datos">("resumen")
   const [search, setSearch] = useState("")
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [tab, setTab] = useState<"heatmap" | "ranking">("heatmap")
@@ -129,13 +123,13 @@ export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard 
   const worst = sorted[sorted.length - 1]
   const gap = best.loc.global - worst.loc.global
 
-  // Band distribution (audited only; no empty/pending segments)
-  const bandData = [
-    { name: "Excelencia", range: "90-100", count: derivedAll.filter(d => d.loc.global >= 90).length, color: BAND_COLORS.excelencia },
-    { name: "Satisfactorio", range: "80-89", count: derivedAll.filter(d => d.loc.global >= 80 && d.loc.global < 90).length, color: BAND_COLORS.satisfactorio },
-    { name: "En alerta", range: "70-79", count: derivedAll.filter(d => d.loc.global >= 70 && d.loc.global < 80).length, color: BAND_COLORS.alerta },
-    { name: "Crítico", range: "<70", count: derivedAll.filter(d => d.loc.global < 70).length, color: BAND_COLORS.critico },
-  ].filter(b => b.count > 0)
+  // Band distribution using official bands (audited only; no empty/pending segments)
+  const bandData = BANDS.map((b) => ({
+    name: b.label,
+    range: b.range,
+    count: derivedAll.filter((d) => bandFor(d.loc.global).key === b.key).length,
+    color: b.color,
+  })).filter((b) => b.count > 0)
 
   // Deterministic executive diagnosis
   const diagnosis = buildDiagnosis(derivedAll, network, dashboard.coverage, dashboard.scope)
@@ -172,8 +166,45 @@ export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard 
         </div>
       </header>
 
+      {/* NAVEGACIÓN PRINCIPAL POR PESTAÑAS */}
+      <div className="sticky top-[57px] z-20 border-b border-gray-200 bg-white/95 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4">
+          {([
+            { key: "resumen", label: "Resumen" },
+            { key: "hallazgos", label: "Hallazgos", badge: dashboard.networkFindings.length },
+            { key: "evolucion", label: "Evolución" },
+            { key: "auditores", label: "Auditores", badge: dashboard.auditors.length },
+            { key: "datos", label: "Estado de datos" },
+          ] as const).map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setMainTab(t.key)}
+              className={`relative flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition-colors ${
+                mainTab === t.key
+                  ? "border-[#B5123F] text-[#B5123F]"
+                  : "border-transparent text-gray-500 hover:text-gray-800"
+              }`}
+            >
+              {t.label}
+              {"badge" in t && t.badge ? (
+                <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${mainTab === t.key ? "bg-[#B5123F] text-white" : "bg-gray-100 text-gray-600"}`}>
+                  {t.badge}
+                </span>
+              ) : null}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">
 
+        {mainTab === "hallazgos" && <HallazgosTab findings={dashboard.networkFindings} />}
+        {mainTab === "evolucion" && <EvolucionTab evolution={dashboard.evolution} />}
+        {mainTab === "auditores" && <AuditoresTab auditors={dashboard.auditors} />}
+        {mainTab === "datos" && <EstadoDatosTab integrity={dashboard.integrity} dashboard={dashboard} />}
+
+        {mainTab === "resumen" && (
+        <>
         {/* COBERTURA DEL TRIMESTRE */}
         <div className="rounded-xl border border-gray-200 bg-white p-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -556,9 +587,11 @@ export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard 
             </div>
           </div>
         )}
+        </>
+        )}
       </main>
 
-      {selected && <Detail d={selected} network={network} onClose={() => setSelectedId(null)} />}
+      {selected && <Detail d={selected} network={network} onClose={() => setSelectedId(null)} dashboard={dashboard} />}
     </div>
   )
 }
@@ -695,12 +728,15 @@ function RankingView({ filtered, onSelect }: { filtered: Derived[]; onSelect: (i
   )
 }
 
-function Detail({ d, network, onClose }: { d: Derived; network: ReturnType<typeof computeNetwork>; onClose: () => void }) {
+function Detail({ d, network, onClose, dashboard }: { d: Derived; network: ReturnType<typeof computeNetwork>; onClose: () => void; dashboard: Q2Dashboard }) {
   const radarData = [
     { area: "Salón", v: d.loc.salon, avg: network.avgSalon },
     { area: "Cocina", v: d.loc.cocina, avg: network.avgCocina },
     { area: "Calidad", v: d.loc.calidad, avg: network.avgCalidad },
   ]
+  const findings = dashboard.findingsByLocation[d.loc.id] ?? []
+  const noCumple = findings.filter((f) => f.ratingValue !== null && f.ratingValue < 0)
+  const conObs = findings.filter((f) => f.observation && f.observation.trim() !== "")
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 bg-black/50" onClick={onClose} />
@@ -770,13 +806,77 @@ function Detail({ d, network, onClose }: { d: Derived; network: ReturnType<typeo
             <p className="text-sm font-medium text-red-700 mt-1">{d.loc.accionRequerida}</p>
           </div>
 
-          <a href={d.loc.pdfUrl || "#"} target="_blank" rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors">
-            <FileText className="h-5 w-5" />
-            Descargar Informe PDF
-          </a>
+          {/* HALLAZGOS POR ÍTEM */}
+          <div className="rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
+              <div className="flex items-center gap-1.5 text-xs font-semibold uppercase text-gray-600">
+                <AlertTriangle className="h-3.5 w-3.5 text-amber-500" /> Hallazgos del local
+              </div>
+              <div className="flex gap-2 text-[11px]">
+                <span className="rounded bg-red-50 px-1.5 py-0.5 text-red-600">{noCumple.length} no cumple</span>
+                <span className="rounded bg-gray-50 px-1.5 py-0.5 text-gray-600">{conObs.length} obs.</span>
+              </div>
+            </div>
+            {findings.length === 0 ? (
+              <p className="px-3 py-4 text-center text-xs text-gray-500">Sin hallazgos ni observaciones registradas por ítem.</p>
+            ) : (
+              <ul className="max-h-64 divide-y divide-gray-50 overflow-y-auto">
+                {findings.map((f, i) => {
+                  const tone = ratingTone(f.ratingValue)
+                  return (
+                    <li key={`${f.itemId}-${i}`} className="px-3 py-2.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{f.itemLabel}</div>
+                          <div className="text-[11px] text-gray-500">{f.areaLabel} · {f.categoryLabel}</div>
+                        </div>
+                        <span className={`shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium ${tone.bg} ${tone.text} ${tone.border}`}>
+                          {f.ratingLabel ?? tone.label}
+                        </span>
+                      </div>
+                      {f.observation && f.observation.trim() !== "" && (
+                        <p className="mt-1 rounded bg-gray-50 px-2 py-1 text-xs text-gray-600">{f.observation}</p>
+                      )}
+                      {f.photoUrl && (
+                        <a href={f.photoUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline">
+                          <ImageIcon className="h-3 w-3" /> Ver foto adjunta
+                        </a>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </div>
+
+          {/* DESCARGAS */}
+          <div className="space-y-2">
+            <a href={d.loc.pdfUrl || "#"} target="_blank" rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-3 bg-[#B5123F] hover:opacity-90 text-white font-semibold rounded-lg transition-opacity">
+              <FileText className="h-5 w-5" />
+              Descargar Informe PDF
+            </a>
+            <ReportActionPlaceholder />
+          </div>
         </div>
       </aside>
     </div>
+  )
+}
+
+// Disabled DOCX export. The generation pipeline is not wired yet; this keeps the
+// affordance visible without faking a download.
+function ReportActionPlaceholder() {
+  return (
+    <button
+      type="button"
+      disabled
+      title="La exportación a Word estará disponible próximamente"
+      className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-lg border border-gray-200 bg-gray-50 py-3 text-sm font-medium text-gray-400"
+    >
+      <FileDown className="h-4 w-4" />
+      Exportar a Word (DOCX)
+      <span className="rounded-full bg-gray-200 px-1.5 py-0.5 text-[10px] uppercase text-gray-500">Próximamente</span>
+    </button>
   )
 }

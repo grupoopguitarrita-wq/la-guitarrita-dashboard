@@ -4,7 +4,7 @@ import { Fragment, useMemo, useState } from "react"
 import {
   AlertTriangle, TrendingDown, TrendingUp, Search, X, Target, Trophy, 
   Activity, ArrowLeft, FileText, Users, CheckCircle2, AlertOctagon,
-  ChevronDown, ChevronUp, BarChart3, Grid3X3,
+  ChevronDown, ChevronUp, BarChart3, Grid3X3, Image as ImageIcon, FileDown,
 } from "lucide-react"
 import {
   ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
@@ -42,6 +42,15 @@ const riskBadge: Record<string, string> = {
   bajo: "text-emerald-700 bg-emerald-50 border-emerald-200",
   moderado: "text-amber-700 bg-amber-50 border-amber-200",
   alto: "text-red-700 bg-red-50 border-red-200",
+}
+
+// Visual tone for an item rating value (2 excepcional ... -2 crítico).
+function ratingTone(v: number | null) {
+  if (v === -2) return { label: "Crítico", bg: "bg-red-50", text: "text-red-700", border: "border-red-200" }
+  if (v !== null && v < 0) return { label: "No cumple", bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" }
+  if (v === 2) return { label: "Excepcional", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" }
+  if (v === 1) return { label: "Cumple", bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-200" }
+  return { label: "Observación", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" }
 }
 
 // Official bands: <=75 crítico · 76-84 alerta · 85-93 satisfactorio · 94+ excelencia

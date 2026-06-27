@@ -518,6 +518,7 @@ export async function getQ2Locations(quarter = "Q2"): Promise<Location[]> {
     return {
       id: a.location_id,
       name: nameById.get(a.location_id) ?? "Local",
+      auditId: a.id,
       file: "",
       pdfUrl: undefined,
       fecha: formatFecha(a.audit_date),

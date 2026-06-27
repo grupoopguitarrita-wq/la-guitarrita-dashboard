@@ -4,7 +4,7 @@ import { Fragment, useMemo, useState } from "react"
 import {
   AlertTriangle, TrendingDown, TrendingUp, Search, X, Target, Trophy, 
   Activity, ArrowLeft, FileText, Users, CheckCircle2, AlertOctagon,
-  ChevronDown, ChevronUp, BarChart3, Grid3X3, Image as ImageIcon, FileDown,
+  ChevronDown, ChevronUp, BarChart3, Grid3X3, Image as ImageIcon,
 } from "lucide-react"
 import {
   ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
@@ -16,6 +16,8 @@ import {
 } from "@/lib/audit-data"
 import type { Q2Dashboard } from "@/lib/q2-data"
 import { buildDiagnosis } from "@/lib/dashboard/diagnosis"
+import ReportActionPanel from "@/components/dashboard/ReportActionPanel"
+import { getReportLink } from "@/lib/report-links"
 import HallazgosTab from "@/components/dashboard/tabs/HallazgosTab"
 import AuditoresTab from "@/components/dashboard/tabs/AuditoresTab"
 import EvolucionTab from "@/components/dashboard/tabs/EvolucionTab"
@@ -546,10 +548,17 @@ export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard 
                         </span>
                       </td>
                       <td className="py-3 text-center">
-                        <a href={d.loc.pdfUrl || "#"} target="_blank" rel="noopener noreferrer"
-                          className="p-1.5 rounded-md hover:bg-red-50 text-gray-500 hover:text-red-600 inline-flex">
-                          <FileText className="h-4 w-4" />
-                        </a>
+                        {getReportLink(d.loc.name) ? (
+                          <a href={getReportLink(d.loc.name)!} target="_blank" rel="noopener noreferrer"
+                            title="Ver informe en Drive"
+                            className="p-1.5 rounded-md hover:bg-red-50 text-gray-500 hover:text-red-600 inline-flex">
+                            <FileText className="h-4 w-4" />
+                          </a>
+                        ) : (
+                          <span title="Informe no disponible aún" className="p-1.5 inline-flex text-gray-300">
+                            <FileText className="h-4 w-4" />
+                          </span>
+                        )}
                       </td>
                       <td className="py-3">
                         <button onClick={() => toggleExpand(d.loc.id)} className="p-1 hover:bg-gray-100 rounded">
@@ -746,6 +755,7 @@ function Detail({ d, network, onClose, dashboard }: { d: Derived; network: Retur
   const findings = dashboard.findingsByLocation[d.loc.id] ?? []
   const noCumple = findings.filter((f) => f.ratingValue !== null && f.ratingValue < 0)
   const conObs = findings.filter((f) => f.observation && f.observation.trim() !== "")
+  const reportLink = getReportLink(d.loc.name)
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 bg-black/50" onClick={onClose} />
@@ -860,12 +870,21 @@ function Detail({ d, network, onClose, dashboard }: { d: Derived; network: Retur
 
           {/* DESCARGAS */}
           <div className="space-y-2">
-            <a href={d.loc.pdfUrl || "#"} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-3 bg-[#B5123F] hover:opacity-90 text-white font-semibold rounded-lg transition-opacity">
-              <FileText className="h-5 w-5" />
-              Descargar Informe PDF
-            </a>
-            <ReportActionPlaceholder />
+            {reportLink ? (
+              <a href={reportLink} target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-3 bg-[#B5123F] hover:opacity-90 text-white font-semibold rounded-lg transition-opacity">
+                <FileText className="h-5 w-5" />
+                Ver Informe en Drive
+              </a>
+            ) : (
+              <div
+                title="El informe de este local todavía no fue cargado"
+                className="flex cursor-not-allowed items-center justify-center gap-2 w-full py-3 bg-gray-100 text-gray-400 font-semibold rounded-lg">
+                <FileText className="h-5 w-5" />
+                Informe no disponible aún
+              </div>
+            )}
+            <ReportActionPanel auditId={d.loc.auditId ?? null} />
           </div>
         </div>
       </aside>
@@ -873,19 +892,3 @@ function Detail({ d, network, onClose, dashboard }: { d: Derived; network: Retur
   )
 }
 
-// Disabled DOCX export. The generation pipeline is not wired yet; this keeps the
-// affordance visible without faking a download.
-function ReportActionPlaceholder() {
-  return (
-    <button
-      type="button"
-      disabled
-      title="La exportación a Word estará disponible próximamente"
-      className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-lg border border-gray-200 bg-gray-50 py-3 text-sm font-medium text-gray-400"
-    >
-      <FileDown className="h-4 w-4" />
-      Exportar a Word (DOCX)
-      <span className="rounded-full bg-gray-200 px-1.5 py-0.5 text-[10px] uppercase text-gray-500">Próximamente</span>
-    </button>
-  )
-}

@@ -8,6 +8,7 @@ export type Tier = "EXCELENTE" | "ÓPTIMO" | "SATISFACTORIO" | "EN DESARROLLO" |
 export interface Location {
   id: string;
   name: string;
+  auditId?: string; // real audit row id (Q2 live data) for report generation
   file: string; // pdf filename in /informes/
   pdfUrl?: string; // full URL to download PDF
   fecha: string;

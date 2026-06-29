@@ -27,6 +27,10 @@ const REPORT_LINKS: Record<string, string> = {
     "https://docs.google.com/document/d/13zCJns9--uJkggG50hjlDPUL9xtdIGRv/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
   nordelta:
     "https://docs.google.com/document/d/1BhcUihYRy9_bokpTzqIKaLo1II0aUc5X/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
+  villacrespo:
+    "https://docs.google.com/document/d/1L6lValWJH0CZibT74tvyxdGe9aGuR_qw/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
+  tigre:
+    "https://docs.google.com/document/d/1In0RkW1jQpUFm9ILrFZNLDJ4sUp8wEcc/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
 }
 
 // Algunos locales usan nombres alternativos en la base. Mapeamos esos alias

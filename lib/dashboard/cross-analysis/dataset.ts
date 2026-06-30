@@ -1,0 +1,547 @@
+// Análisis cruzado Q2 2026 · fotografía editorial validada.
+// Datos exactos del informe ejecutivo (no se consultan Supabase ni Drive aquí).
+import type {
+  CrossAnalysisSnapshot,
+  CrossAnalysisLocation,
+  PendingLocation,
+  NetworkTheme,
+  NetworkMetrics,
+} from "./types"
+
+export const SNAPSHOT: CrossAnalysisSnapshot = {
+  snapshotId: "cross-q2-2026",
+  status: "editorial_validated",
+  quarter: "Q2",
+  year: 2026,
+  cutoffDate: "2026-06-30",
+  filloutFrom: "2026-04-01",
+  filloutTo: "2026-06-30",
+  networkSize: 18,
+  auditedLocations: 12,
+  analyzedReports: 8,
+  filloutVisits: 153,
+  scoredVisits: 135,
+  productTests: 60,
+  methodologyVersion: "cross-analysis-v2",
+}
+
+export const LOCATIONS: CrossAnalysisLocation[] = [
+  {
+    id: "caballito",
+    name: "Caballito",
+    quarterlyAudit: {
+      global: 83, salon: 89, cocina: 85, calidad: 75, critical: 0, nonCompliant: 5,
+      variations: { global: -6, salon: -2, cocina: 4, calidad: -11 },
+    },
+    fillout: {
+      visits: 15, averageStars: 2.93, productTests: 1, productCoverage: 6.7,
+      expiredVisits: 9, traceabilityVisits: 10, cleaningVisits: 4, qualityHygieneVisits: 3, stockoutVisits: 0,
+    },
+    topDailyIncidence: 66.7,
+    topIncidenceTheme: "Trazabilidad",
+    monthlySeries: { abril: 4, mayo: 3, junio: 2 },
+    monthlySeriesLabel: "Vencimientos por mes",
+    priority: "high",
+    sourceAgreement: "relevant_divergence",
+    trend: "gradual_improvement_without_close",
+    closure: "partial_improvement",
+    confidence: "medium_high",
+    executiveProfile: "Divergencia relevante entre la auditoría trimestral y la operación diaria.",
+    managementReading:
+      "Q2 concentra el riesgo en Calidad, mientras Fillout muestra una frecuencia elevada de productos excedidos y controles de trazabilidad incompletos.",
+    dominantRisk: "Vida útil y estandarización gastronómica.",
+    q2Findings: [
+      "Procedimiento SIN TACC",
+      "Grasa acumulada en equipos",
+      "Pizza individual con tamaño superior al estándar",
+      "Ensalada Menotti sin provolone",
+      "Panceta fuera de textura y cocción",
+      "Caída de Calidad",
+    ],
+    filloutEvidence: [
+      "Empanadas excedidas",
+      "Fainá excedida",
+      "Bollos grandes, chicos e individuales",
+      "Productos pasados de 48 horas",
+      "Producto disponible antes del decomiso",
+      "Horno eléctrico sucio",
+      "Checklist de limpieza incompleto",
+    ],
+    postAuditEvidence: [],
+    immediateActions: [
+      "Revisar el 100% de productos y fechas",
+      "Reforzar decomiso",
+      "Corregir SIN TACC",
+      "Verificar limpieza profunda",
+      "Aumentar pruebas de producto",
+    ],
+    sevenDayActions: ["Validar pizza individual", "Repetir Ensalada Menotti", "Controlar gramajes y receta"],
+    thirtyDayActions: ["Medir si los vencimientos dejan de aparecer", "Aumentar cobertura de pruebas Fillout"],
+    riskDimensions: {
+      shelf_life: "high", traceability: "high", deep_cleaning: "moderate", cold_chain_equipment: "low",
+      product_standardization: "high", sin_tacc: "high", infrastructure_brand_image: "low",
+      stock_availability: "low", brand_procedures: "moderate", management_closure: "high",
+    },
+    methodologyNotes: ["Confianza en trazabilidad: alta", "Confianza en producto cotidiano: baja", "Confianza general: media-alta"],
+  },
+  {
+    id: "palermo",
+    name: "Palermo",
+    quarterlyAudit: {
+      global: 92, salon: 91, cocina: 88, calidad: 96, critical: 1, nonCompliant: 0,
+      variations: { global: 1, salon: 5, cocina: -1, calidad: -2 },
+    },
+    fillout: {
+      visits: 18, averageStars: 3.0, productTests: 2, productCoverage: 11.1,
+      expiredVisits: 8, traceabilityVisits: 8, cleaningVisits: 9, qualityHygieneVisits: 5, stockoutVisits: 1,
+    },
+    topDailyIncidence: 50.0,
+    topIncidenceTheme: "Limpieza",
+    monthlySeries: { abril: 3, mayo: 4, junio: 1 },
+    monthlySeriesLabel: "Vencimientos por mes",
+    priority: "high",
+    sourceAgreement: "high_confirmation",
+    trend: "partial_improvement",
+    closure: "partial_improvement",
+    confidence: "high",
+    executiveProfile: "Desempeño alto con riesgo sanitario persistente.",
+    managementReading:
+      "El 92% global refleja una operación sólida, pero Fillout confirma que el hallazgo Crítico de vencimientos no fue aislado.",
+    dominantRisk: "Control de vida útil y decomiso.",
+    q2Findings: [
+      "20 bollos individuales vencidos",
+      "Vida útil considerablemente superada",
+      "Riesgo de inocuidad",
+      "Falta de decomiso",
+      "Pérdida de trazabilidad",
+    ],
+    filloutEvidence: [
+      "Fainá vencida",
+      "Empanadas vencidas",
+      "Chocotorta",
+      "Tiramisú",
+      "Bollos",
+      "Productos con varios días fuera de vida útil",
+      "Planillas de decomiso incompletas",
+      "Productos sin rotular",
+      "Producciones con más de nueve días",
+    ],
+    postAuditEvidence: [],
+    immediateActions: [
+      "Revisión total de stock",
+      "Decomiso documentado",
+      "Prohibir productos sin fecha",
+      "Asignar responsable por turno",
+    ],
+    sevenDayActions: ["Doble control de apertura y cierre", "Planilla de decomiso", "Separación de productos próximos a vencer"],
+    thirtyDayActions: ["Exigir dos controles consecutivos sin vencidos", "Verificar estabilidad de la mejora"],
+    riskDimensions: {
+      shelf_life: "critical", traceability: "high", deep_cleaning: "moderate", cold_chain_equipment: "low",
+      product_standardization: "low", sin_tacc: "low", infrastructure_brand_image: "moderate",
+      stock_availability: "moderate", brand_procedures: "moderate", management_closure: "high",
+    },
+    methodologyNotes: ["Confianza general: alta", "No utilizar como benchmark de vida útil"],
+  },
+  {
+    id: "tigre",
+    name: "Tigre",
+    quarterlyAudit: {
+      global: 81, salon: 92, cocina: 74, calidad: 78, critical: 1, nonCompliant: 9,
+      variations: { global: 3, salon: 0, cocina: -16, calidad: 27 },
+    },
+    fillout: {
+      visits: 14, averageStars: 2.45, productTests: 7, productCoverage: 50.0,
+      expiredVisits: 8, traceabilityVisits: 13, cleaningVisits: 10, qualityHygieneVisits: 11, stockoutVisits: 3,
+    },
+    topDailyIncidence: 92.9,
+    topIncidenceTheme: "Trazabilidad",
+    monthlySeries: { abril: 6, mayo: 3, junio: 4 },
+    monthlySeriesLabel: "Persistencia mensual de trazabilidad",
+    priority: "urgent",
+    sourceAgreement: "very_high_confirmation",
+    trend: "persistent",
+    closure: "persistent",
+    confidence: "high",
+    executiveProfile: "Riesgo sistémico persistente y baja capacidad de cierre.",
+    managementReading:
+      "Ambas fuentes coinciden de forma prácticamente total. Los problemas afectan varias dimensiones y continúan a lo largo de los tres meses.",
+    dominantRisk: "Riesgo sanitario, trazabilidad y gestión.",
+    q2Findings: [
+      "Productos vencidos", "Rotulado", "Grasa en equipos", "Campana", "Freezer",
+      "SIN TACC", "Regeneración", "Ensalada Menotti", "Producto fuera de estándar",
+    ],
+    filloutEvidence: [
+      "Mercadería en el piso", "Productos sin film", "Fainá vencida", "Salsa con un mes",
+      "Bollos y postres sin fecha", "48 empanadas vencidas", "Tapas reutilizadas", "Dobles fechas",
+      "Producto marcado que continuaba presente", "Heladera con burletes rotos", "Puertas que no cierran",
+      "Descongelado incorrecto", "Marca no autorizada", "Falta de respuesta frente a observaciones",
+    ],
+    postAuditEvidence: [],
+    immediateActions: [
+      "Intervención integral", "Decomiso", "Revisión total de stock", "Corregir frío",
+      "Ordenar freezer", "Limpiar campana", "Completar SIN TACC",
+    ],
+    sevenDayActions: ["Plan con responsables", "Registro diario", "Evidencia fotográfica", "Verificación de producto"],
+    thirtyDayActions: ["Seguimiento semanal", "Medir reaparición", "Validar capacidad real de cierre"],
+    riskDimensions: {
+      shelf_life: "critical", traceability: "critical", deep_cleaning: "critical", cold_chain_equipment: "high",
+      product_standardization: "high", sin_tacc: "high", infrastructure_brand_image: "moderate",
+      stock_availability: "high", brand_procedures: "high", management_closure: "critical",
+    },
+    methodologyNotes: [
+      "Confianza general: alta",
+      "Tigre usa trazabilidad en la serie mensual: no existe desglose exacto de vencimientos en el corte procesado",
+      "6 visitas sin evolución o predisposición suficiente",
+    ],
+  },
+  {
+    id: "nunez",
+    name: "Núñez",
+    quarterlyAudit: {
+      global: 78, salon: 93, cocina: 78, calidad: 63, critical: 0, nonCompliant: 10,
+      variations: { global: -18, salon: -4, cocina: -17, calidad: -33 },
+    },
+    fillout: {
+      visits: 26, averageStars: 3.55, productTests: 10, productCoverage: 38.5,
+      expiredVisits: 4, traceabilityVisits: 5, cleaningVisits: 9, qualityHygieneVisits: 0, stockoutVisits: 0,
+    },
+    topDailyIncidence: 34.6,
+    topIncidenceTheme: "Limpieza",
+    monthlySeries: { abril: 1, mayo: 2, junio: 1 },
+    monthlySeriesLabel: "Vencimientos por mes",
+    priority: "high",
+    sourceAgreement: "partial_high_confirmation",
+    trend: "deteriorating",
+    closure: "immediate_persistence_after_q2",
+    confidence: "high",
+    executiveProfile: "Deterioro del control operativo con ejecución gastronómica inestable.",
+    managementReading:
+      "Fillout confirma pérdida de disciplina en limpieza y control. Q2 agrega una profundidad que Fillout no captura completamente en producto.",
+    dominantRisk: "Pérdida de disciplina operativa y estandarización.",
+    q2Findings: [
+      "SIN TACC", "Productos sin fecha", "Producto fuera de vida útil", "Grasa en equipos",
+      "Superficies con residuos", "Sándwich Tango fuera de armado", "Pizza con masa cruda",
+      "Ensalada Menotti con porción e ingredientes incompletos",
+    ],
+    filloutEvidence: [
+      "Freezer con hielo", "Rótulos viejos reutilizados", "Fainá vencida", "Hornos sucios",
+      "Cortadora sucia", "Heladera de empanadas con acumulación", "Microondas sucio", "Horno SIN TACC sucio",
+    ],
+    postAuditEvidence: [
+      "24/06: planilla incompleta",
+      "25/06: microondas, cinta de empanadas y hornallas pendientes",
+      "El punto ya había sido observado en Q2",
+    ],
+    immediateActions: ["Rotular", "Decomisar", "Limpieza profunda", "Completar SIN TACC", "Repetir productos críticos"],
+    sevenDayActions: ["Recuperar rutinas por turno", "Responsables", "Checklist", "Validación del Manual de Producto"],
+    thirtyDayActions: ["Control semanal", "Medir recuperación", "Verificar que los hallazgos posteriores desaparezcan"],
+    riskDimensions: {
+      shelf_life: "high", traceability: "high", deep_cleaning: "high", cold_chain_equipment: "moderate",
+      product_standardization: "high", sin_tacc: "high", infrastructure_brand_image: "low",
+      stock_availability: "low", brand_procedures: "high", management_closure: "high",
+    },
+    methodologyNotes: ["Confianza en control y limpieza: alta", "Confianza en producto cotidiano: media", "Confianza general: alta"],
+  },
+  {
+    id: "olivos",
+    name: "Olivos",
+    quarterlyAudit: {
+      global: 82, salon: 81, cocina: 88, calidad: 77, critical: 2, nonCompliant: 9,
+      variations: { global: 0, salon: 3, cocina: 1, calidad: -5 },
+    },
+    fillout: {
+      visits: 15, averageStars: 3.33, productTests: 9, productCoverage: 60.0,
+      expiredVisits: 3, traceabilityVisits: 8, cleaningVisits: 4, qualityHygieneVisits: 2, stockoutVisits: 2,
+    },
+    topDailyIncidence: 53.3,
+    topIncidenceTheme: "Trazabilidad",
+    monthlySeries: { abril: 3, mayo: 0, junio: 0 },
+    monthlySeriesLabel: "Vencimientos por mes",
+    priority: "high",
+    sourceAgreement: "high_confirmation",
+    trend: "partial_improvement",
+    closure: "partial_improvement",
+    confidence: "medium_high",
+    executiveProfile: "Mejora parcial con riesgos activos en trazabilidad, marca y procedimientos.",
+    managementReading:
+      "Existe una mejora clara en vencimientos, pero permanecen problemas de rotulado, marca, checklist, Barra y procedimientos.",
+    dominantRisk: "Trazabilidad, producto y cumplimiento de marca.",
+    q2Findings: [
+      "Barra y pase", "Fachada", "SIN TACC", "Rotulado", "Superficies",
+      "Bastones", "Chino Garcé", "Panceta cruda", "Crutones sin cocción", "Temperatura incorrecta",
+    ],
+    filloutEvidence: [
+      "Fainá sin rótulo", "Pizzas rellenas sin rotular", "Bollos sin fecha", "Queso Dambo de marca no autorizada",
+      "Marca observada nuevamente", "Barra con falta de limpieza", "Checklist sin fechas legibles",
+      "Salsa sin templar", "Fugazzeta con baja temperatura",
+    ],
+    postAuditEvidence: [],
+    immediateActions: ["Corregir rotulado", "Retirar marca no autorizada", "Validar SIN TACC", "Corregir Producto Frío", "Limpiar Barra"],
+    sevenDayActions: ["Completar checklist", "Revisar procedimientos", "Repetir producto", "Reparar fachada y letrero"],
+    thirtyDayActions: ["Verificar que la mejora en vencimientos se sostenga", "Confirmar cierre de marca y rotulado"],
+    riskDimensions: {
+      shelf_life: "high", traceability: "high", deep_cleaning: "high", cold_chain_equipment: "moderate",
+      product_standardization: "critical", sin_tacc: "high", infrastructure_brand_image: "high",
+      stock_availability: "moderate", brand_procedures: "high", management_closure: "high",
+    },
+    methodologyNotes: ["Confianza general: media-alta"],
+  },
+  {
+    id: "euskal",
+    name: "Euskal",
+    quarterlyAudit: {
+      global: 85, salon: 91, cocina: 91, calidad: 74, critical: 2, nonCompliant: 5,
+      variations: { global: -5, salon: -2, cocina: 8, calidad: -20 },
+    },
+    fillout: {
+      visits: 25, averageStars: 3.24, productTests: 17, productCoverage: 68.0,
+      expiredVisits: 4, traceabilityVisits: 4, cleaningVisits: 6, qualityHygieneVisits: 1, stockoutVisits: 3,
+    },
+    topDailyIncidence: 24.0,
+    topIncidenceTheme: "Limpieza",
+    monthlySeries: { abril: 2, mayo: 2, junio: 0 },
+    monthlySeriesLabel: "Vencimientos por mes",
+    priority: "focused",
+    sourceAgreement: "partial_confirmation",
+    trend: "stable_with_specific_risk",
+    closure: "partial_improvement",
+    confidence: "medium_high",
+    executiveProfile: "Operación madura con inconsistencia puntual de estandarización.",
+    managementReading:
+      "El local puede producir correctamente, pero existe variabilidad de armado y estandarización según momento, turno o responsable.",
+    dominantRisk: "Estandarización de producto.",
+    q2Findings: [
+      "Ensalada Menotti con receta incorrecta", "Porción fuera de estándar", "Presentación crítica",
+      "Armado incorrecto", "Productos sin etiqueta", "Filtros", "Plantas secas", "Iluminación",
+    ],
+    filloutEvidence: [
+      "Mayoría de pruebas de producto positivas", "Tostado con pan incorrecto", "Producto más cocido",
+      "Jabulani mal armado", "Necesidad de repasar recetas", "Menotti correcta en visitas previas",
+    ],
+    postAuditEvidence: [],
+    immediateActions: ["Revisar receta", "Gramaje", "Mise en place", "Repetir Menotti", "Validar presentación"],
+    sevenDayActions: ["Capacitación puntual", "Control de armado", "Rotulado", "Filtros"],
+    thirtyDayActions: ["Comparar turnos", "Aumentar validación visual", "Verificar consistencia"],
+    riskDimensions: {
+      shelf_life: "moderate", traceability: "moderate", deep_cleaning: "moderate", cold_chain_equipment: "low",
+      product_standardization: "critical", sin_tacc: "low", infrastructure_brand_image: "moderate",
+      stock_availability: "moderate", brand_procedures: "moderate", management_closure: "moderate",
+    },
+    methodologyNotes: [
+      "Confianza general: media-alta",
+      "Limpieza por mes (abril/mayo/junio): 5 / 1 / 0",
+      "Benchmark de base operativa (Salón y Cocina en 91)",
+    ],
+  },
+  {
+    id: "villacrespo",
+    name: "Villa Crespo",
+    quarterlyAudit: {
+      global: 88, salon: 82, cocina: 86, calidad: 96, critical: 1, nonCompliant: 7,
+      variations: { global: 1, salon: -3, cocina: -3, calidad: 8 },
+    },
+    fillout: {
+      visits: 18, averageStars: 3.78, productTests: 3, productCoverage: 16.7,
+      expiredVisits: 4, traceabilityVisits: 5, cleaningVisits: 5, qualityHygieneVisits: 2, stockoutVisits: 4,
+    },
+    topDailyIncidence: 27.8,
+    topIncidenceTheme: "Trazabilidad",
+    monthlySeries: { abril: 3, mayo: 0, junio: 1 },
+    monthlySeriesLabel: "Vencimientos por mes",
+    priority: "focused",
+    sourceAgreement: "partial_positive_confirmation",
+    trend: "stable_with_specific_risk",
+    closure: "insufficient_post_audit_evidence",
+    confidence: "medium",
+    executiveProfile: "Producto sólido con deterioro de infraestructura y controles auxiliares.",
+    managementReading:
+      "La operación gastronómica es sólida. Los riesgos se concentran en infraestructura, mantenimiento y controles auxiliares.",
+    dominantRisk: "Infraestructura, imagen y procedimientos auxiliares.",
+    q2Findings: [
+      "Fachada crítica", "Letrero", "Paredes", "Campana visible", "SIN TACC",
+      "Rotulado", "Mantenimiento del horno", "Material incorrecto en Bastones",
+    ],
+    filloutEvidence: [
+      "Mantenimiento exterior del horno", "Rotulado", "Freezer pendiente de descongelado",
+      "Faltantes de stock", "Pruebas de producto correctas",
+    ],
+    postAuditEvidence: [],
+    immediateActions: ["Completar SIN TACC", "Rotular", "Revisar stock", "Corregir elementos operativos"],
+    sevenDayActions: ["Plan de fachada", "Letrero", "Paredes", "Mantenimiento del horno"],
+    thirtyDayActions: ["Verificar infraestructura", "Aumentar cobertura diaria de producto", "Sostener Calidad"],
+    riskDimensions: {
+      shelf_life: "moderate", traceability: "moderate", deep_cleaning: "moderate", cold_chain_equipment: "moderate",
+      product_standardization: "low", sin_tacc: "high", infrastructure_brand_image: "critical",
+      stock_availability: "high", brand_procedures: "high", management_closure: "insufficient_data",
+    },
+    methodologyNotes: ["Confianza general: media", "Calidad 96: posible práctica de mise en place y despacho"],
+  },
+  {
+    id: "nordelta",
+    name: "Nordelta",
+    quarterlyAudit: {
+      global: 90, salon: 88, cocina: 89, calidad: 93, critical: 0, nonCompliant: 5,
+      variations: { global: 11, salon: 15, cocina: 15, calidad: 3 },
+    },
+    fillout: {
+      visits: 22, averageStars: 3.11, productTests: 11, productCoverage: 50.0,
+      expiredVisits: 6, traceabilityVisits: 6, cleaningVisits: 7, qualityHygieneVisits: 6, stockoutVisits: 3,
+    },
+    topDailyIncidence: 31.8,
+    topIncidenceTheme: "Limpieza",
+    monthlySeries: { abril: 4, mayo: 2, junio: 0 },
+    monthlySeriesLabel: "Vencimientos por mes",
+    priority: "consolidation",
+    sourceAgreement: "confirmed_improvement",
+    trend: "confirmed_recovery",
+    closure: "sustained_improvement",
+    confidence: "high",
+    executiveProfile: "Recuperación confirmada con necesidad de consolidación.",
+    managementReading:
+      "Fillout muestra una reducción progresiva de problemas y Q2 confirma una recuperación transversal.",
+    dominantRisk: "Retroceso si no se sostienen rutinas.",
+    q2Findings: ["Fachada", "Letrero", "Mobiliario", "Objetos personales", "Limpieza profunda"],
+    filloutEvidence: [
+      "Fainá incompleta", "Exceso de rúcula", "Muzzarella dorada", "Exceso de panceta",
+      "Crutones sin crocancia", "Mejora progresiva", "Junio sin vencimientos ni señales importantes",
+    ],
+    postAuditEvidence: [],
+    immediateActions: ["Cerrar mantenimiento pendiente", "Retirar objetos personales", "Limpiar equipos"],
+    sevenDayActions: ["Fachada", "Letrero", "Mobiliario", "Punto de cocción"],
+    thirtyDayActions: ["Sostener controles", "Verificar que junio no sea una mejora temporal"],
+    riskDimensions: {
+      shelf_life: "moderate", traceability: "moderate", deep_cleaning: "moderate", cold_chain_equipment: "low",
+      product_standardization: "low", sin_tacc: "low", infrastructure_brand_image: "high",
+      stock_availability: "moderate", brand_procedures: "moderate", management_closure: "low",
+    },
+    methodologyNotes: [
+      "Confianza general: alta",
+      "Estrellas por mes (abril/mayo/junio): 2,86 / 3,25 / 3,33",
+      "Benchmark de recuperación: estudiar rutinas",
+    ],
+  },
+]
+
+// Locales sin análisis cruzado todavía (informe o auditoría pendiente).
+export const PENDING_LOCATIONS: PendingLocation[] = [
+  { name: "Devoto", state: "report_pending" },
+  { name: "Flores", state: "report_pending" },
+  { name: "Las Lomitas", state: "report_pending" },
+  { name: "Pilar", state: "report_pending" },
+  { name: "Quilmes", state: "audit_pending" },
+  { name: "Ramos Mejía", state: "audit_pending" },
+  { name: "San Justo", state: "audit_pending" },
+  { name: "Vicente López", state: "audit_pending" },
+  { name: "Caseros", state: "audit_pending" },
+  { name: "Lanús", state: "audit_pending" },
+]
+
+// Orden sugerido de atención operativa (NO ranking oficial).
+export const SUGGESTED_ORDER: string[] = [
+  "tigre", "palermo", "nunez", "caballito", "olivos", "euskal", "villacrespo", "nordelta",
+]
+
+export const NETWORK_THEMES: NetworkTheme[] = [
+  {
+    theme: "shelf_life", negativeResponses: 46, percentage: 30.5,
+    topLocations: ["Tigre", "Palermo", "Caballito"],
+    risks: ["Inocuidad", "Decomiso", "Trazabilidad", "Reputación"],
+    actions: ["Doble control", "Responsables", "Revisión de stock", "Registro de decomiso"],
+  },
+  {
+    theme: "traceability", negativeResponses: 59, percentage: 38.6,
+    topLocations: ["Tigre", "Caballito", "Olivos", "Palermo", "Núñez", "Villa Crespo"],
+    actions: ["Rotulado", "Fecha", "Familia", "Responsable", "Revisión por turno"],
+    note: "59 visitas con señal agrupada de trazabilidad.",
+  },
+  {
+    theme: "deep_cleaning", negativeResponses: 54, percentage: 35.3,
+    topLocations: ["Tigre", "Palermo", "Núñez", "Nordelta", "Euskal"],
+    actions: ["Cronograma", "Zonas profundas", "Campanas", "Filtros", "Evidencia"],
+    note: "54 visitas con señal de limpieza.",
+  },
+  {
+    theme: "product_standardization", negativeResponses: null, percentage: null,
+    topLocations: ["Núñez", "Euskal", "Caballito", "Olivos", "Tigre"],
+    risks: ["Receta", "Porción", "Cocción", "Armado", "Temperatura", "Presentación"],
+    note: "Calidad promedio de la red: 81,5.",
+  },
+  {
+    theme: "sin_tacc", negativeResponses: null, percentage: null,
+    topLocations: ["Caballito", "Núñez", "Olivos", "Tigre", "Villa Crespo"],
+    note: "Presente en Q2 en cinco locales.",
+  },
+  {
+    theme: "infrastructure_brand_image", negativeResponses: null, percentage: null,
+    topLocations: ["Villa Crespo", "Olivos", "Nordelta", "Euskal"],
+  },
+  {
+    theme: "stock_availability", negativeResponses: 16, percentage: null,
+    topLocations: ["Villa Crespo", "Euskal", "Nordelta", "Tigre", "Olivos"],
+    note: "16 respuestas negativas de stock.",
+  },
+  {
+    theme: "management_closure", negativeResponses: null, percentage: null,
+    topLocations: ["Tigre", "Palermo", "Núñez", "Caballito", "Olivos"],
+  },
+  {
+    theme: "cold_chain_equipment", negativeResponses: 21, percentage: 14.0,
+    topLocations: ["Tigre", "Núñez", "Palermo"],
+    note: "Freezer, cámaras o heladeras con suciedad: 21 respuestas · 14,0%.",
+  },
+  {
+    theme: "brand_procedures", negativeResponses: 3, percentage: 2.0,
+    topLocations: ["Olivos", "Villa Crespo", "Tigre"],
+    note: "Marcas no autorizadas: 3 respuestas · 2,0%.",
+  },
+]
+
+export const METRICS: NetworkMetrics = {
+  coverage: {
+    analyzedReports: 8, auditedQ2: 12, networkTotal: 18,
+    filloutVisits: 153, scoredVisits: 135, nonScoredVisits: 18, productTestVisits: 60,
+  },
+  q2Averages: { global: 84.9, salon: 88.4, cocina: 84.9, calidad: 81.5 },
+  q2Composition: { critical: 7, nonCompliant: 50, totalNegative: 57, locationsWithCritical: 5, totalAnalyzed: 8 },
+  groupings: {
+    traceabilitySignals: { count: 59, percentage: 38.6 },
+    cleaningSignals: { count: 54, percentage: 35.3 },
+    anySignal: { count: 98, percentage: 64.1 },
+  },
+}
+
+// Estados editoriales de capacidad de cierre (texto exacto del informe).
+export const CLOSURE_TABLE: { id: string; name: string; label: string }[] = [
+  { id: "tigre", name: "Tigre", label: "Persistencia" },
+  { id: "palermo", name: "Palermo", label: "Mejora parcial" },
+  { id: "caballito", name: "Caballito", label: "Mejora gradual sin cierre" },
+  { id: "nunez", name: "Núñez", label: "Persistencia inmediata posterior" },
+  { id: "olivos", name: "Olivos", label: "Mejora parcial por tema" },
+  { id: "nordelta", name: "Nordelta", label: "Mejora sostenida" },
+  { id: "euskal", name: "Euskal", label: "Mejora básica; producto pendiente" },
+  { id: "villacrespo", name: "Villa Crespo", label: "Evidencia posterior insuficiente" },
+]
+
+export const BENCHMARKS: { name: string; points: string[] }[] = [
+  { name: "Nordelta", points: ["Recuperación progresiva", "Reducción de vencimientos", "Mejora de estrellas", "Oportunidad de estudiar rutinas"] },
+  { name: "Villa Crespo", points: ["Calidad 96", "Producto sólido", "Posible práctica de mise en place y despacho"] },
+  { name: "Euskal", points: ["Salón y Cocina en 91", "Alta cobertura de pruebas", "Buena base operativa"] },
+  { name: "Palermo", points: ["Calidad y operación general sólidas", "No utilizar como benchmark de vida útil"] },
+]
+
+export const FILLOUT_SIGNALS: { label: string; responses: number; percentage: number }[] = [
+  { label: "Productos excedidos o vencidos", responses: 46, percentage: 30.5 },
+  { label: "Algo que afecta calidad o higiene", responses: 30, percentage: 20.1 },
+  { label: "Rotulado incompleto", responses: 22, percentage: 14.6 },
+  { label: "Freezer, cámaras o heladeras con suciedad", responses: 21, percentage: 14.0 },
+  { label: "Checklist de limpieza incompleto", responses: 16, percentage: 10.6 },
+  { label: "Faltantes de stock", responses: 16, percentage: 10.6 },
+  { label: "Áreas de trabajo con suciedad", responses: 15, percentage: 9.9 },
+  { label: "Salón o mobiliario con problemas", responses: 8, percentage: 5.3 },
+  { label: "Uniforme de Salón incompleto", responses: 5, percentage: 3.4 },
+  { label: "Pantallas o música fuera de lineamiento", responses: 5, percentage: 3.3 },
+  { label: "Uniforme de Cocina incompleto", responses: 4, percentage: 2.6 },
+  { label: "Marcas no autorizadas", responses: 3, percentage: 2.0 },
+  { label: "Exceso de premarcado", responses: 3, percentage: 2.0 },
+  { label: "Planillas principales sin uso", responses: 3, percentage: 2.2 },
+]

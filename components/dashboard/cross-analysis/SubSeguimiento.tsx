@@ -16,11 +16,14 @@ const chartData = (["abril", "mayo", "junio"] as const).map((m) => {
 })
 
 const closureTone: Record<ClosureStatus, string> = {
-  resolved: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  in_progress: "bg-amber-50 text-amber-700 border-amber-200",
+  confirmed_closed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  sustained_improvement: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  partial_improvement: "bg-amber-50 text-amber-700 border-amber-200",
   persistent: "bg-red-50 text-red-700 border-red-200",
-  not_started: "bg-gray-50 text-gray-600 border-gray-200",
-  no_data: "bg-gray-50 text-gray-400 border-gray-200",
+  reappeared: "bg-red-50 text-red-700 border-red-200",
+  immediate_persistence_after_q2: "bg-red-50 text-red-700 border-red-200",
+  insufficient_post_audit_evidence: "bg-gray-50 text-gray-600 border-gray-200",
+  not_evaluable: "bg-gray-50 text-gray-400 border-gray-200",
 }
 
 export default function SubSeguimiento() {

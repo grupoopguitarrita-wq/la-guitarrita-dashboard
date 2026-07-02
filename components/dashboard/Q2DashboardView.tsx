@@ -19,6 +19,7 @@ import { buildDiagnosis } from "@/lib/dashboard/diagnosis"
 import ReportActionPanel from "@/components/dashboard/ReportActionPanel"
 import { getReportLink } from "@/lib/report-links"
 import HallazgosTab from "@/components/dashboard/tabs/HallazgosTab"
+import CrossAnalysisTab from "@/components/dashboard/cross-analysis/CrossAnalysisTab"
 import AuditoresTab from "@/components/dashboard/tabs/AuditoresTab"
 import EvolucionTab from "@/components/dashboard/tabs/EvolucionTab"
 import EstadoDatosTab from "@/components/dashboard/tabs/EstadoDatosTab"
@@ -67,7 +68,7 @@ function heatCell(v: number) {
 
 export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard }) {
   const ALL = dashboard.audited
-  const [mainTab, setMainTab] = useState<"resumen" | "hallazgos" | "evolucion" | "auditores" | "datos">("resumen")
+  const [mainTab, setMainTab] = useState<"resumen" | "hallazgos" | "cruzado" | "evolucion" | "auditores" | "datos">("resumen")
   const [search, setSearch] = useState("")
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [tab, setTab] = useState<"heatmap" | "ranking">("heatmap")
@@ -183,6 +184,7 @@ export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard 
           {([
             { key: "resumen", label: "Resumen" },
             { key: "hallazgos", label: "Hallazgos", badge: dashboard.networkFindings.length },
+            { key: "cruzado", label: "Análisis cruzado" },
             { key: "evolucion", label: "Evolución" },
             { key: "auditores", label: "Auditores", badge: dashboard.auditors.length },
             { key: "datos", label: "Estado de datos" },
@@ -210,6 +212,7 @@ export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard 
       <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">
 
         {mainTab === "hallazgos" && <HallazgosTab findings={dashboard.networkFindings} />}
+        {mainTab === "cruzado" && <CrossAnalysisTab />}
         {mainTab === "evolucion" && <EvolucionTab evolution={dashboard.evolution} />}
         {mainTab === "auditores" && <AuditoresTab auditors={dashboard.auditors} />}
         {mainTab === "datos" && <EstadoDatosTab integrity={dashboard.integrity} dashboard={dashboard} />}

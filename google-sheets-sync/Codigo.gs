@@ -264,9 +264,19 @@ function crearDisparador() {
 // ---------------------------------------------------------------------------
 function doPost(e) {
   try {
-    // Seguridad simple: token compartido en la query (?token=...).
+    // Token compartido. Se acepta tanto en la query (?token=...) como en el
+    // cuerpo JSON ({ "token": "..." }), para que funcionen por igual el webhook
+    // de Supabase y el aviso directo de la app (/api/sheets/notify).
     var expected = PropertiesService.getScriptProperties().getProperty('WEBHOOK_TOKEN');
     var got = e && e.parameter ? e.parameter.token : null;
+    if (!got && e && e.postData && e.postData.contents) {
+      try {
+        var body = JSON.parse(e.postData.contents);
+        got = body && body.token ? body.token : null;
+      } catch (parseErr) {
+        got = null;
+      }
+    }
     if (expected && got !== expected) {
       return ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'token inválido' }))
         .setMimeType(ContentService.MimeType.JSON);

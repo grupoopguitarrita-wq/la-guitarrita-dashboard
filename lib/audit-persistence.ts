@@ -343,6 +343,27 @@ export async function submitAudit(
     console.error('Error inserting audit scores:', scoresError)
     throw scoresError
   }
+
+  // Aviso al Google Sheet para que sincronice al instante. Fire-and-forget:
+  // si falla o el Sheet no está configurado, la auditoría igual quedó guardada.
+  notifyGoogleSheet(auditId)
+}
+
+/**
+ * Notifica (sin bloquear) al Google Sheet que una auditoría se completó.
+ */
+function notifyGoogleSheet(auditId: string): void {
+  try {
+    void fetch('/api/sheets/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ auditId }),
+    }).catch(() => {
+      /* silencioso: el disparador automático del Sheet lo levantará igual */
+    })
+  } catch {
+    /* silencioso */
+  }
 }
 
 function getScoreLabel(score: number): string {

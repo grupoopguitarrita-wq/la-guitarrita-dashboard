@@ -94,6 +94,17 @@ momento** en que se cierra una auditoría, configurá un webhook de Supabase:
 > Nota: el webhook dispara una sincronización completa (es rápida). No hace
 > falta configurar nada más en la planilla.
 
+### D) (Alternativa) Que la app avise directo, sin webhook de Supabase
+La app ya intenta avisarle al Sheet apenas se envía una auditoría. Para
+activarlo, cargá estas dos variables en el proyecto (menú **Vars** de v0):
+
+- `SHEETS_WEBHOOK_URL` = la URL de la Web App del paso A (`.../exec`).
+- `SHEETS_WEBHOOK_TOKEN` = el mismo valor que pusiste en `WEBHOOK_TOKEN`.
+
+Con eso, al terminar una auditoría la app llama al script y el Sheet se
+sincroniza al instante. Si no las cargás, no pasa nada malo: el disparador
+automático de 10 minutos igual mantiene la planilla al día.
+
 ---
 
 ## Uso diario

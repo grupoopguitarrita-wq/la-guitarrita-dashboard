@@ -71,7 +71,7 @@ export function MetadataScreen({
         setError(null)
       } catch (err) {
         console.error('Error loading locations:', err)
-        setError('No se pudieron cargar los locales. Verifica tu conexión a Supabase.')
+        setError('No se pudieron cargar los locales. Intentá recargar la página.')
       } finally {
         setLoading(false)
       }

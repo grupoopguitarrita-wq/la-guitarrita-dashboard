@@ -4,6 +4,7 @@ import type { Location } from '@/types/database'
 import { getRatingLabel, getGlobalLabel } from '@/types/audit'
 import { AUDIT_STRUCTURE, getItemById } from '@/data/audit-structure'
 import { calculateAreaScore, calculateGlobalScores } from './audit-scoring'
+import { getLocationsCatalog } from './locations-catalog'
 import {
   sheetsCreateAudit,
   sheetsSaveResponse,
@@ -66,20 +67,11 @@ export async function saveAreaScore(
 }
 
 /**
- * Locales: se siguen leyendo desde Supabase (lectura).
+ * Locales: se leen del catálogo fijo de la red (lib/locations-catalog.ts).
+ * Ya no depende de Supabase. Para editar la lista, modificá ese archivo.
  */
 export async function fetchLocations(): Promise<Location[]> {
-  const { data, error } = await supabase
-    .from('locations')
-    .select('*')
-    .order('name')
-
-  if (error) {
-    console.error('Error fetching locations:', error)
-    throw error
-  }
-
-  return data ?? []
+  return getLocationsCatalog()
 }
 
 /**

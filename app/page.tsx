@@ -329,7 +329,7 @@ export default function AuditPage() {
       await flushPendingSaves()
 
       // Submit the audit
-      await submitAudit(auditId, responses)
+      await submitAudit(auditId, responses, metadata)
 
       // Delete the draft since audit was successfully submitted
       if (metadata.locationId) {

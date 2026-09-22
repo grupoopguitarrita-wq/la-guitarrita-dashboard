@@ -24,7 +24,7 @@ var SCHEMA = {
     'id', 'location_id', 'location_name', 'auditor_name', 'auditor_names',
     'audit_date', 'audit_quarter', 'status',
     'salon_score', 'cocina_score', 'calidad_score', 'global_score', 'global_label',
-    'created_at', 'updated_at', 'submitted_at',
+    'created_at', 'updated_at', 'submitted_at', 'sync_status', 'sync_error',
   ],
   audit_responses: [
     'id', 'audit_id', 'area_id', 'area_label', 'category_id', 'category_label',
@@ -66,6 +66,7 @@ function doPost(e) {
       case 'saveResponse':  return json(saveResponse(payload))
       case 'saveAreaScore': return json(saveAreaScore(payload))
       case 'submitAudit':   return json(submitAudit(payload))
+      case 'markSyncPending': return json(markSyncPending(payload))
       case 'uploadPhoto':   return json(uploadPhoto(payload))
       case 'listLocations': return json({ ok: true, data: listLocations() })
       case 'ping':          return json({ ok: true, pong: true })
@@ -99,10 +100,23 @@ function createAudit(p) {
     status: 'in_progress',
     salon_score: '', cocina_score: '', calidad_score: '',
     global_score: '', global_label: '',
-    created_at: now, updated_at: now, submitted_at: '',
+    created_at: now, updated_at: now, submitted_at: '', sync_status: 'not_synced', sync_error: '',
   }
   upsertRow('audits', 'id', p.id, row)
   return { ok: true, id: p.id }
+}
+
+/** Marca un envío confirmado en Sheets pero pendiente de sincronizar con Supabase. */
+function markSyncPending(p) {
+  var sheet = getSheet('audits')
+  var match = findRowByKey(sheet, 'id', p.auditId)
+  if (!match) return { ok: false, error: 'Auditoría no encontrada' }
+  var headers = headerIndex(sheet).headers
+  var statusColumn = headers.indexOf('sync_status') + 1
+  var errorColumn = headers.indexOf('sync_error') + 1
+  if (statusColumn > 0) sheet.getRange(match.rowIndex, statusColumn).setValue('pending_sync')
+  if (errorColumn > 0) sheet.getRange(match.rowIndex, errorColumn).setValue(p.reason || 'supabase_sync_failed')
+  return { ok: true, id: p.auditId, syncStatus: 'pending_sync' }
 }
 
 /** Upsert de una respuesta por (audit_id, item_id). */
@@ -207,7 +221,7 @@ function submitAudit(p) {
   return { ok: true }
 }
 
-/** Guarda una foto (base64) en Drive y devuelve un link público. */
+/** Guarda una foto (base64) en Drive y devuelve un link p��blico. */
 function uploadPhoto(p) {
   var folder = getPhotoFolder()
   var bytes = Utilities.base64Decode(p.base64, Utilities.Charset.UTF_8)

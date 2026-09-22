@@ -11,6 +11,7 @@ import {
   sheetsSaveAreaScore,
   sheetsSubmitAudit,
   sheetsUploadPhoto,
+  sheetsMarkSyncPending,
 } from './sheets-db'
 
 /**
@@ -176,7 +177,8 @@ export async function uploadPhoto(
  */
 export async function submitAudit(
   auditId: string,
-  responses: AuditResponses
+  responses: AuditResponses,
+  metadata: AuditMetadata,
 ): Promise<void> {
   const globalScores = calculateGlobalScores(responses)
 
@@ -232,6 +234,15 @@ export async function submitAudit(
     globalLabel: globalScores.globalLabel,
     scores,
   })
+
+  const syncResponse = await fetch('/api/audits/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ auditId, metadata, responses, scores }),
+  })
+  if (!syncResponse.ok && process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV !== 'preview') {
+    await sheetsMarkSyncPending({ auditId, reason: 'supabase_sync_failed' }).catch((error) => console.warn('[Audit] Could not mark sync pending:', error))
+  }
 }
 
 // ----------------------------------------------------------------------------

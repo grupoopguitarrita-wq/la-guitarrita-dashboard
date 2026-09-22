@@ -93,6 +93,10 @@ export function sheetsSubmitAudit(payload: {
   return callSheets("submitAudit", payload)
 }
 
+export function sheetsMarkSyncPending(payload: { auditId: string; reason: string }) {
+  return callSheets('markSyncPending', payload)
+}
+
 export function sheetsUploadPhoto(payload: {
   base64: string
   mimeType: string

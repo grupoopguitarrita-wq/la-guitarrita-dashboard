@@ -1,7 +1,7 @@
 "use client"
 
 import { Users, UserCheck, AlertTriangle } from "lucide-react"
-import type { AuditorStat } from "@/lib/q2-data"
+import type { AuditorStat } from "@/lib/dashboard-data"
 
 function Bar({ value, max, color }: { value: number; max: number; color: string }) {
   const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0

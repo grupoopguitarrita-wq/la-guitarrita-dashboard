@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { AlertOctagon, AlertTriangle, ChevronDown, ChevronUp, MapPin } from "lucide-react"
-import type { NetworkFinding } from "@/lib/q2-data"
+import type { NetworkFinding } from "@/lib/dashboard-data"
 import { suggestAction } from "@/lib/dashboard/actions"
 
 export default function HallazgosTab({ findings }: { findings: NetworkFinding[] }) {

@@ -58,9 +58,15 @@ function getScoreBgColor(score: number): { r: number; g: number; b: number } {
   return { r: 254, g: 226, b: 226 } // red-100
 }
 
+function getPhotoFetchUrl(url: string): string {
+  const driveId = url.match(/[?&]id=([^&]+)/)?.[1]
+  return driveId ? `/api/photos/drive?fileId=${encodeURIComponent(driveId)}` : url
+}
+
 async function loadImageAsBase64(url: string): Promise<string | null> {
   try {
-    const response = await fetch(url)
+    const response = await fetch(getPhotoFetchUrl(url))
+    if (!response.ok) return null
     const blob = await response.blob()
     return new Promise((resolve) => {
       const reader = new FileReader()

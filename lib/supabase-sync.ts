@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
 import type { AuditMetadata, AuditResponses } from '@/types/audit'
 import { AUDIT_STRUCTURE } from '@/data/audit-structure'
@@ -15,6 +16,12 @@ export type SubmittedAuditSyncInput = {
 
 export function isPreviewSyncDisabled() {
   return process.env.VERCEL_ENV === 'preview' || process.env.NODE_ENV !== 'production'
+}
+
+function deterministicUuid(seed: string) {
+  const hex = createHash('sha256').update(seed).digest('hex')
+  const variant = ((parseInt(hex[16], 16) & 0x3) | 0x8).toString(16)
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-${variant}${hex.slice(17, 20)}-${hex.slice(20, 32)}`
 }
 
 function scoreFromInput(input: SubmittedAuditSyncInput, scoreType: string, areaId: string | null) {
@@ -36,7 +43,7 @@ export function buildSupabaseSyncPayload(input: SubmittedAuditSyncInput) {
     if (!item) return null
     const photos = response.photoUrls?.length ? response.photoUrls : response.photoUrl ? [response.photoUrl] : []
     return {
-      id: `${input.auditId}:${itemId}`,
+      id: deterministicUuid(`${input.auditId}:response:${itemId}`),
       audit_id: input.auditId,
       area_id: item.area.id,
       area_label: item.area.label,
@@ -77,7 +84,7 @@ export function buildSupabaseSyncPayload(input: SubmittedAuditSyncInput) {
       updated_at: now,
     },
     scores: input.scores.map((score, index) => ({
-      id: `${input.auditId}:${score.scoreType}:${score.areaId ?? 'global'}:${score.categoryId ?? index}`,
+      id: deterministicUuid(`${input.auditId}:score:${score.scoreType}:${score.areaId ?? 'global'}:${score.categoryId ?? index}`),
       audit_id: input.auditId,
       score_type: score.scoreType,
       area_id: score.areaId,

@@ -5,7 +5,7 @@ import { TrendingUp, TrendingDown, Minus, Sparkles } from "lucide-react"
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from "recharts"
-import type { EvolutionRow } from "@/lib/q2-data"
+import type { EvolutionRow } from "@/lib/dashboard-data"
 import { bandFor } from "@/lib/audit-data"
 
 const QUARTER_ORDER = ["Q3 2025", "Q4 2025", "Q1 2026", "Q2 2026"]

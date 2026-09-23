@@ -139,7 +139,7 @@ export type DataIntegrity = {
   issues: string[]
 }
 
-export type Q2Dashboard = {
+export type DashboardData = {
   audited: Location[]
   universe: number // expected locations (non-test) in the network
   pending: PendingLocation[]
@@ -154,7 +154,7 @@ export type Q2Dashboard = {
   integrity: DataIntegrity
 }
 
-function scopeFor(coverage: number): Q2Dashboard["scope"] {
+function scopeFor(coverage: number): DashboardData["scope"] {
   if (coverage >= 100) return "Trimestre completo"
   if (coverage >= 70) return "Lectura representativa"
   if (coverage >= 35) return "Lectura parcial"
@@ -168,7 +168,7 @@ function scopeFor(coverage: number): Q2Dashboard["scope"] {
 // Fixed network universe per spec (18 locales). Used when the DB count differs.
 const NETWORK_UNIVERSE = 18
 
-export async function getQ2Dashboard(quarter = "Q2"): Promise<Q2Dashboard> {
+export async function getDashboardByPeriod(year = 2026, quarter = "Q3"): Promise<DashboardData> {
   // 1. Locations map
   const { data: locsData } = await supabase.from("locations").select("id, name")
   const locs = (locsData ?? []) as { id: string; name: string }[]
@@ -180,6 +180,9 @@ export async function getQ2Dashboard(quarter = "Q2"): Promise<Q2Dashboard> {
     .from("audits")
     .select("id, location_id, auditor_name, auditor_names, audit_date, audit_quarter, status, salon_score, cocina_score, calidad_score, global_score")
     .eq("audit_quarter", quarter)
+    .gte("audit_date", `${year}-01-01`)
+    .lt("audit_date", `${year + 1}-01-01`)
+    .eq("status", "submitted")
     .order("audit_date", { ascending: false })
 
   const allAudits = (rawAudits ?? []) as (AuditRow & { auditor_names: string[] | null })[]
@@ -188,7 +191,7 @@ export async function getQ2Dashboard(quarter = "Q2"): Promise<Q2Dashboard> {
     return name && !isExcludedLocation(name)
   })
 
-  const audited = await getQ2Locations(quarter)
+  const audited = await getDashboardLocations(year, quarter)
 
   // 3. Universe & coverage (non-test locations; floor at fixed network size).
   const universeLocs = locs.filter((l) => !isExcludedLocation(l.name))
@@ -455,7 +458,7 @@ function normalizeName(s: string): string {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "")
 }
 
-export async function getQ2Locations(quarter = "Q2"): Promise<Location[]> {
+export async function getDashboardLocations(year = 2026, quarter = "Q3"): Promise<Location[]> {
   // 1. Locations map (id -> name)
   const { data: locsData } = await supabase.from("locations").select("id, name")
   const locs = (locsData ?? []) as { id: string; name: string }[]
@@ -467,6 +470,9 @@ export async function getQ2Locations(quarter = "Q2"): Promise<Location[]> {
     .from("audits")
     .select("id, location_id, auditor_name, audit_date, audit_quarter, status, salon_score, cocina_score, calidad_score, global_score")
     .eq("audit_quarter", quarter)
+    .gte("audit_date", `${year}-01-01`)
+    .lt("audit_date", `${year + 1}-01-01`)
+    .eq("status", "submitted")
     .not("global_score", "is", null)
     .order("audit_date", { ascending: false })
 

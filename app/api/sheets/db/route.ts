@@ -31,17 +31,22 @@ export async function POST(request: Request) {
   }
 
   try {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 12_000)
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       // Apps Script requiere seguir el redirect 302 al dominio de contenido.
       redirect: "follow",
+      signal: controller.signal,
       body: JSON.stringify({
         action: incoming.action,
         payload: incoming.payload ?? {},
         token,
       }),
     })
+    clearTimeout(timeout)
+    if (!res.ok) return NextResponse.json({ ok: false, error: "script_http_error", status: res.status }, { status: 502 })
 
     const text = await res.text()
     let data: unknown

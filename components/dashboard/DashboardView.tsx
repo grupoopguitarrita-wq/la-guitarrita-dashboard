@@ -14,7 +14,7 @@ import {
   computeNetwork, computeDerived, AREA_LABEL, bandFor, BANDS,
   type Derived, type Tier, type AreaKey,
 } from "@/lib/audit-data"
-import type { Q2Dashboard } from "@/lib/q2-data"
+import type { DashboardData } from "@/lib/dashboard-data"
 import { buildDiagnosis } from "@/lib/dashboard/diagnosis"
 import ReportActionPanel from "@/components/dashboard/ReportActionPanel"
 import { getReportLink } from "@/lib/report-links"
@@ -66,7 +66,7 @@ function heatCell(v: number) {
   return { bg: b.bg, text: b.text }
 }
 
-export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard }) {
+export default function DashboardView({ dashboard, initialYear, initialQuarter }: { dashboard: DashboardData; initialYear: number; initialQuarter: string }) {
   const ALL = dashboard.audited
   const [mainTab, setMainTab] = useState<"resumen" | "hallazgos" | "cruzado" | "evolucion" | "auditores" | "datos">("resumen")
   const [search, setSearch] = useState("")
@@ -105,15 +105,30 @@ export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard 
               <span className="text-sm">Volver</span>
             </Link>
             <div className="h-5 w-px bg-gray-300" />
-            <h1 className="text-lg font-bold text-red-600">Pizarra - Dashboard Q2 2026</h1>
+            <h1 className="text-lg font-bold text-red-600">Pizarra - Dashboard {initialQuarter} {" "}{initialYear}</h1>
           </div>
         </header>
-        <div className="flex flex-1 items-center justify-center p-8 text-center">
-          <div>
-            <Activity className="mx-auto h-10 w-10 text-gray-300" />
-            <p className="mt-3 text-gray-600">Aún no hay auditorías Q2 2026 con resultados cargados.</p>
+        <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 p-6">
+          <form method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-gray-200 bg-white p-4 text-left">
+            <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">Año
+              <select name="year" defaultValue={String(initialYear)} className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900">
+                {[2026, 2025, 2024].map((year) => <option key={year} value={year}>{year}</option>)}
+              </select>
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">Trimestre
+              <select name="quarter" defaultValue={initialQuarter} className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900">
+                {["Q1", "Q2", "Q3", "Q4"].map((quarter) => <option key={quarter} value={quarter}>{quarter}</option>)}
+              </select>
+            </label>
+            <button type="submit" className="rounded-md bg-[#B5123F] px-4 py-2 text-sm font-semibold text-white">Aplicar filtros</button>
+          </form>
+          <div className="flex flex-1 items-center justify-center p-8 text-center">
+            <div>
+              <Activity className="mx-auto h-10 w-10 text-gray-300" />
+              <p className="mt-3 text-gray-600">Aún no hay auditorías {initialQuarter}{" "}{initialYear} enviadas con resultados cargados.</p>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     )
   }
@@ -166,7 +181,7 @@ export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard 
             <div className="h-5 w-px bg-gray-300" />
             <div>
               <h1 className="text-lg font-bold" style={{ color: "#B5123F" }}>Pizarra de Auditorías Trimestrales</h1>
-              <p className="text-[11px] text-gray-500">Q2 2026 · Actualizado {dashboard.lastUpdated}</p>
+              <p className="text-[11px] text-gray-500">{initialQuarter}{" "}{initialYear} · Actualizado {dashboard.lastUpdated}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -210,6 +225,19 @@ export default function Q2DashboardView({ dashboard }: { dashboard: Q2Dashboard 
       </div>
 
       <main className="mx-auto max-w-7xl px-4 py-6 space-y-6">
+        <form method="get" className="flex flex-wrap items-end gap-3 rounded-xl border border-gray-200 bg-white p-4">
+          <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">Año
+            <select name="year" defaultValue={String(initialYear)} className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900">
+              {[2026, 2025, 2024].map((year) => <option key={year} value={year}>{year}</option>)}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-xs font-medium text-gray-600">Trimestre
+            <select name="quarter" defaultValue={initialQuarter} className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900">
+              {['Q1', 'Q2', 'Q3', 'Q4'].map((quarter) => <option key={quarter} value={quarter}>{quarter}</option>)}
+            </select>
+          </label>
+          <button type="submit" className="rounded-md bg-[#B5123F] px-4 py-2 text-sm font-semibold text-white">Aplicar filtros</button>
+        </form>
 
         {mainTab === "hallazgos" && <HallazgosTab findings={dashboard.networkFindings} />}
         {mainTab === "cruzado" && <CrossAnalysisTab />}
@@ -749,7 +777,7 @@ function RankingView({ filtered, onSelect }: { filtered: Derived[]; onSelect: (i
   )
 }
 
-function Detail({ d, network, onClose, dashboard }: { d: Derived; network: ReturnType<typeof computeNetwork>; onClose: () => void; dashboard: Q2Dashboard }) {
+function Detail({ d, network, onClose, dashboard }: { d: Derived; network: ReturnType<typeof computeNetwork>; onClose: () => void; dashboard: DashboardData }) {
   const radarData = [
     { area: "Salón", v: d.loc.salon, avg: network.avgSalon },
     { area: "Cocina", v: d.loc.cocina, avg: network.avgCocina },

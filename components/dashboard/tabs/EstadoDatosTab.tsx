@@ -1,7 +1,7 @@
 "use client"
 
 import { CheckCircle2, AlertTriangle, Database, FileText, Clock, Send, ShieldX, Copy } from "lucide-react"
-import type { DataIntegrity, Q2Dashboard } from "@/lib/q2-data"
+import type { DataIntegrity, DashboardData } from "@/lib/dashboard-data"
 
 function StatCard({ icon: Icon, label, value, tone }: { icon: typeof Database; label: string; value: number; tone: string }) {
   return (
@@ -14,7 +14,7 @@ function StatCard({ icon: Icon, label, value, tone }: { icon: typeof Database; l
   )
 }
 
-export default function EstadoDatosTab({ integrity, dashboard }: { integrity: DataIntegrity; dashboard: Q2Dashboard }) {
+export default function EstadoDatosTab({ integrity, dashboard }: { integrity: DataIntegrity; dashboard: DashboardData }) {
   const completeness =
     integrity.totalQ2Audits > 0 ? Math.round((integrity.withGlobalScore / integrity.totalQ2Audits) * 100) : 0
   const hasIssues = integrity.missingScore > 0 || integrity.inProgress > 0 || integrity.duplicateLocations > 0

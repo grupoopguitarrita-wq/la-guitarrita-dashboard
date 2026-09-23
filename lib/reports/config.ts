@@ -35,5 +35,9 @@ export function getGeneratorSecret(): string | null {
 // Nombre del bucket de Storage donde el servicio sube los DOCX.
 export const REPORTS_BUCKET = "audit-reports"
 
+// Google Drive folder configured by the external generator, never embedded as a credential.
+export const REPORTS_DRIVE_FOLDER_ID = process.env.REPORTS_DRIVE_FOLDER_ID?.trim() || null
+export const REPORTS_DRIVE_FOLDER_NAME = "26 Q3 INFORMES"
+
 // Timeout para llamadas al microservicio (ms).
 export const GENERATOR_TIMEOUT_MS = 15_000

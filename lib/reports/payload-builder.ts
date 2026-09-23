@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase"
 import { bandFor } from "@/lib/audit-data"
-import { getQ2Dashboard } from "@/lib/q2-data"
+import { getDashboardByPeriod } from "@/lib/dashboard-data"
 import historico from "@/lib/dashboard/historico.json"
 import { computeSourceHash } from "./source-hash"
 import { TEMPLATE_VERSION, GENERATOR_VERSION, type ReportPayload, type ReportFinding } from "./types"
@@ -82,7 +82,8 @@ export async function buildReportPayload(auditId: string): Promise<BuiltPayload>
   const audit = auditData as AuditRow | null
   if (!audit) throw new Error(`Auditoría ${auditId} no encontrada`)
 
-  const quarter = audit.audit_quarter ?? "Q2"
+  const quarter = audit.audit_quarter ?? "Q3"
+  const year = Number(audit.audit_date.slice(0, 4)) || 2026
 
   // 2. Nombre del local
   const { data: locData } = await supabase.from("locations").select("name").eq("id", audit.location_id).single()
@@ -138,7 +139,7 @@ export async function buildReportPayload(auditId: string): Promise<BuiltPayload>
   })
 
   // 8. Contexto de red (desde dashboard)
-  const dash = await getQ2Dashboard(quarter)
+  const dash = await getDashboardByPeriod(year, quarter)
   const ranked = [...dash.audited].sort((a, b) => b.global - a.global)
   const rankIdx = ranked.findIndex((l) => l.id === audit.location_id)
   const avgRed = dash.audited.length

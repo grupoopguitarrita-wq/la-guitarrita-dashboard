@@ -10,6 +10,11 @@ import { RatingSelector } from './rating-selector'
 import type { AuditItem as AuditItemType, ItemResponse, RatingValue } from '@/types/audit'
 import { RATING_OPTIONS, getResponsePhotos } from '@/types/audit'
 
+function getPhotoPreviewUrl(url: string): string {
+  const driveId = url.match(/[?&]id=([^&]+)/)?.[1]
+  return driveId ? `/api/photos/drive?fileId=${encodeURIComponent(driveId)}` : url
+}
+
 type AuditItemProps = {
   item: AuditItemType
   response: ItemResponse
@@ -28,6 +33,10 @@ export function AuditItem({
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [photoStatus, setPhotoStatus] = useState<{
+    type: 'success' | 'error'
+    message: string
+  } | null>(null)
 
   const handleRatingChange = (value: RatingValue) => {
     onResponseChange({ value })
@@ -53,6 +62,7 @@ export function AuditItem({
     if (!file) return
 
     setIsUploading(true)
+    setPhotoStatus(null)
     try {
       const newPhotoUrl = await onPhotoUpload(file)
       // Add to existing photos array
@@ -62,8 +72,15 @@ export function AuditItem({
         // Keep photoUrl in sync (use first photo for backward compatibility)
         photoUrl: updatedPhotos[0] || null
       })
+      setPhotoStatus({ type: 'success', message: 'Foto cargada correctamente' })
     } catch (error) {
       console.error('Error uploading photo:', error)
+      setPhotoStatus({
+        type: 'error',
+        message: error instanceof Error
+          ? error.message
+          : 'No se pudo subir la foto. Intentá nuevamente.',
+      })
     } finally {
       setIsUploading(false)
       // Clear both inputs
@@ -232,6 +249,18 @@ export function AuditItem({
                 </Button>
               </div>
               
+              {photoStatus && (
+                <p
+                  role="status"
+                  className={cn(
+                    'text-sm font-medium mt-2',
+                    photoStatus.type === 'success' ? 'text-emerald-600' : 'text-red-600',
+                  )}
+                >
+                  {photoStatus.message}
+                </p>
+              )}
+
               {requiresPhoto && currentPhotos.length === 0 && (
                 <p className="text-xs text-red-500 mt-1">Foto requerida para esta calificación</p>
               )}
@@ -242,7 +271,7 @@ export function AuditItem({
                   {currentPhotos.map((photoUrl, index) => (
                     <div key={index} className="relative">
                       <img
-                        src={photoUrl}
+                        src={getPhotoPreviewUrl(photoUrl)}
                         alt={`Evidencia ${index + 1}`}
                         className="w-20 h-20 object-cover rounded-lg border"
                       />
@@ -372,7 +401,7 @@ export function AuditItem({
                 {currentPhotos.map((photoUrl, index) => (
                   <div key={index} className="relative">
                     <img
-                      src={photoUrl}
+                      src={getPhotoPreviewUrl(photoUrl)}
                       alt={`Evidencia ${index + 1}`}
                       className="w-20 h-20 object-cover rounded-lg border"
                     />

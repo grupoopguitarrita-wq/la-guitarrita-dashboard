@@ -160,12 +160,14 @@ export async function uploadPhoto(
   itemId: string,
   file: File
 ): Promise<string> {
-  const base64 = await fileToBase64(file)
-  const filename = `${auditId}-${itemId}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+  const optimizedFile = await optimizePhoto(file)
+  const base64 = await fileToBase64(optimizedFile)
+  const originalName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9.-]/g, '_')
+  const filename = `${auditId}-${itemId}-${Date.now()}-${originalName}.jpg`
 
   const result = await sheetsUploadPhoto({
     base64,
-    mimeType: file.type || 'image/jpeg',
+    mimeType: optimizedFile.type || 'image/jpeg',
     filename,
   })
 
@@ -259,6 +261,58 @@ function generateId(): string {
     const v = c === 'x' ? r : (r & 0x3) | 0x8
     return v.toString(16)
   })
+}
+
+/**
+ * Reduce las fotos antes de enviarlas para evitar límites de tamaño y tiempos
+ * de espera en Vercel / Apps Script. La imagen final mide como máximo 1280 px
+ * por lado y se guarda como JPEG liviano.
+ */
+async function optimizePhoto(file: File): Promise<File> {
+  if (!file.type.startsWith('image/')) {
+    throw new Error('El archivo seleccionado no es una imagen')
+  }
+
+  const objectUrl = URL.createObjectURL(file)
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const element = new Image()
+      element.onload = () => resolve(element)
+      element.onerror = () => reject(new Error('No se pudo leer la foto. Probá tomarla nuevamente.'))
+      element.src = objectUrl
+    })
+
+    const maxDimension = 1280
+    const scale = Math.min(1, maxDimension / Math.max(image.naturalWidth, image.naturalHeight))
+    const width = Math.max(1, Math.round(image.naturalWidth * scale))
+    const height = Math.max(1, Math.round(image.naturalHeight * scale))
+
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('No se pudo preparar la foto')
+
+    context.drawImage(image, 0, 0, width, height)
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (result) => result ? resolve(result) : reject(new Error('No se pudo comprimir la foto')),
+        'image/jpeg',
+        0.72,
+      )
+    })
+
+    if (blob.size > 1_800_000) {
+      throw new Error('La foto sigue siendo demasiado pesada. Probá sacar otra con menor resolución.')
+    }
+
+    return new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', {
+      type: 'image/jpeg',
+      lastModified: Date.now(),
+    })
+  } finally {
+    URL.revokeObjectURL(objectUrl)
+  }
 }
 
 /** Convierte un File a base64 puro (sin el prefijo data:...). */

@@ -1,7 +1,7 @@
 import type { AuditMetadata, AuditResponses } from '@/types/audit'
 import { AUDIT_STRUCTURE } from '@/data/audit-structure'
 import { calculateGlobalScores, calculateAreaScore } from './audit-scoring'
-import { getGlobalLabel } from '@/types/audit'
+import { getGlobalLabel, getResponsePhotos } from '@/types/audit'
 import jsPDF from 'jspdf'
 
 // Brand colors
@@ -16,6 +16,12 @@ type NegativeFinding = {
   severity: 'no_cumple' | 'critico'
   observation: string
   photoUrl: string | null
+}
+
+type PhotoEvidence = {
+  categoryLabel: string
+  itemLabel: string
+  photoUrl: string
 }
 
 function getNegativeFindings(areaId: string, responses: AuditResponses): NegativeFinding[] {
@@ -42,6 +48,29 @@ function getNegativeFindings(areaId: string, responses: AuditResponses): Negativ
   }
 
   return findings
+}
+
+function getPhotoEvidence(areaId: string, responses: AuditResponses): PhotoEvidence[] {
+  const area = AUDIT_STRUCTURE.areas.find((candidate) => candidate.id === areaId)
+  if (!area) return []
+
+  const evidence: PhotoEvidence[] = []
+  for (const category of area.categories) {
+    for (const item of category.items) {
+      const response = responses[item.id]
+      if (!response) continue
+
+      for (const photoUrl of getResponsePhotos(response)) {
+        evidence.push({
+          categoryLabel: category.label,
+          itemLabel: item.isCustomLabel && response.customLabel ? response.customLabel : item.label,
+          photoUrl,
+        })
+      }
+    }
+  }
+
+  return evidence
 }
 
 function getScoreColor(score: number): string {
@@ -384,6 +413,75 @@ async function addFindingsSection(
   return y
 }
 
+async function addPhotoEvidenceSection(
+  doc: jsPDF,
+  evidence: PhotoEvidence[],
+  startY: number,
+  areaLabel?: string,
+): Promise<number> {
+  if (evidence.length === 0) return startY
+
+  let y = startY
+  const margin = 20
+  const pageWidth = doc.internal.pageSize.getWidth()
+  const contentWidth = pageWidth - margin * 2
+  const imageWidth = 58
+  const imageHeight = 44
+  const gap = 8
+  const cardWidth = (contentWidth - gap) / 2
+
+  if (y > doc.internal.pageSize.getHeight() - 70) {
+    doc.addPage()
+    y = 20
+  }
+
+  y = addSectionTitle(
+    doc,
+    areaLabel ? `Evidencias fotográficas - ${areaLabel} (${evidence.length})` : `Evidencias fotográficas (${evidence.length})`,
+    y,
+  )
+
+  for (let index = 0; index < evidence.length; index += 2) {
+    if (y + 60 > doc.internal.pageSize.getHeight() - 20) {
+      doc.addPage()
+      y = 20
+    }
+
+    const row = evidence.slice(index, index + 2)
+    for (let column = 0; column < row.length; column++) {
+      const item = row[column]
+      const x = margin + column * (cardWidth + gap)
+
+      doc.setFillColor(249, 250, 251)
+      doc.roundedRect(x, y, cardWidth, 56, 2, 2, 'F')
+
+      const imgBase64 = await loadImageAsBase64(item.photoUrl)
+      if (imgBase64) {
+        try {
+          doc.addImage(imgBase64, 'JPEG', x + 3, y + 3, imageWidth, imageHeight)
+        } catch {
+          // Si una imagen puntual no puede decodificarse, el resto del informe continúa.
+        }
+      }
+
+      doc.setFontSize(7)
+      doc.setTextColor(hexToRgb(MEDIUM_GRAY).r, hexToRgb(MEDIUM_GRAY).g, hexToRgb(MEDIUM_GRAY).b)
+      doc.setFont('helvetica', 'normal')
+      doc.text(item.categoryLabel, x + 3, y + 50)
+
+      doc.setFontSize(8)
+      doc.setTextColor(hexToRgb(DARK_GRAY).r, hexToRgb(DARK_GRAY).g, hexToRgb(DARK_GRAY).b)
+      doc.setFont('helvetica', 'bold')
+      const label = item.itemLabel.length > 28 ? item.itemLabel.slice(0, 27) + '...' : item.itemLabel
+      doc.text(label, x + 3, y + 54)
+    }
+
+    y += 62
+  }
+
+  return y
+}
+
 function addFooter(doc: jsPDF): void {
   const pageHeight = doc.internal.pageSize.getHeight()
   const pageWidth = doc.internal.pageSize.getWidth()
@@ -445,6 +543,13 @@ export async function generateAreaPdf(
   if (findings.length > 0) {
     y += 6
     y = await addFindingsSection(doc, findings, y)
+  }
+
+  // Evidencias fotográficas (todas las calificaciones)
+  const photoEvidence = getPhotoEvidence(areaId, responses)
+  if (photoEvidence.length > 0) {
+    y += 6
+    y = await addPhotoEvidenceSection(doc, photoEvidence, y, area.label)
   }
 
   // Footer on each page
@@ -522,6 +627,7 @@ export async function generateFinalPdf(
   for (const area of AUDIT_STRUCTURE.areas) {
     const areaScore = calculateAreaScore(area.id, responses)
     const findings = getNegativeFindings(area.id, responses)
+    const photoEvidence = getPhotoEvidence(area.id, responses)
 
     // Check if we need a new page
     if (y > doc.internal.pageSize.getHeight() - 60) {
@@ -556,6 +662,11 @@ export async function generateFinalPdf(
     if (findings.length > 0) {
       y += 4
       y = await addFindingsSection(doc, findings, y, area.label)
+    }
+
+    if (photoEvidence.length > 0) {
+      y += 4
+      y = await addPhotoEvidenceSection(doc, photoEvidence, y, area.label)
     }
 
     y += 6

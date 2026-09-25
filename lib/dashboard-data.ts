@@ -183,6 +183,13 @@ const Q3_2026_SHEETS_FALLBACK: Location[] = [
   { id: "belgrano", name: "Belgrano", auditId: "665561c2-5ae6-4b7d-95c5-dd88f334d6f6", file: "", fecha: "24 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 71, salon: 71, cocina: 62, calidad: 79, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Cocina (62/100)" },
 ]
 
+const FALLBACK_NETWORK_LOCATIONS: PendingLocation[] = [
+  "Belgrano", "Caballito", "Colegiales", "Dardo Rocha", "Devoto", "Euskal",
+  "Cañitas", "Maschwitz", "Martínez", "Nordelta", "Núñez", "Olivos",
+  "Palermo", "Pilar", "Tigre", "Villa Crespo", "Villa Urquiza", "Villa del Parque",
+].map((name) => ({ id: normalizeName(name), name }))
+
+
 export async function getDashboardByPeriod(year = 2026, quarter = "Q3"): Promise<DashboardData> {
   // 1. Locations map
   const { data: locsData } = await supabase.from("locations").select("id, name")
@@ -210,10 +217,11 @@ export async function getDashboardByPeriod(year = 2026, quarter = "Q3"): Promise
 
   // 3. Universe & coverage (non-test locations; floor at fixed network size).
   const universeLocs = locs.filter((l) => !isExcludedLocation(l.name))
-  const universe = Math.max(universeLocs.length, NETWORK_UNIVERSE, audited.length)
+  const effectiveUniverseLocs = universeLocs.length > 0 ? universeLocs : FALLBACK_NETWORK_LOCATIONS
+  const universe = Math.max(effectiveUniverseLocs.length, NETWORK_UNIVERSE, audited.length)
   const auditedIds = new Set(audited.map((a) => a.id))
   const auditedNames = new Set(audited.map((a) => normalizeName(a.name)))
-  const pending: PendingLocation[] = universeLocs
+  const pending: PendingLocation[] = effectiveUniverseLocs
     .filter((l) => !auditedIds.has(l.id) && !auditedNames.has(normalizeName(l.name)))
     .map((l) => ({ id: l.id, name: l.name }))
     .sort((a, b) => a.name.localeCompare(b.name))

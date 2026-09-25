@@ -168,6 +168,21 @@ function scopeFor(coverage: number): DashboardData["scope"] {
 // Fixed network universe per spec (18 locales). Used when the DB count differs.
 const NETWORK_UNIVERSE = 18
 
+// Snapshot de respaldo de auditorías Q3 2026 confirmadas en la planilla maestra.
+// Se combina con Supabase por nombre de local: los datos en vivo tienen prioridad.
+// Esto evita que la pizarra quede vacía cuando la réplica de Supabase se interrumpe.
+const Q3_2026_SHEETS_FALLBACK: Location[] = [
+  { id: "olivos", name: "Olivos", auditId: "23c26898-5698-4951-a678-41e485f09aa2", file: "", fecha: "21 de septiembre de 2026", auditores: ["Auditor 1", "Carlos"], global: 63, salon: 60, cocina: 80, calidad: 50, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Calidad (50/100)" },
+  { id: "villa-crespo", name: "Villa Crespo", auditId: "8eb7f0b1-1aa7-4bfe-8f8c-b915f96a5510", file: "", fecha: "21 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 82, salon: 82, cocina: 87, calidad: 78, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "moderado", accionRequerida: "Reforzar Calidad (78/100) y sostener el resto" },
+  { id: "palermo", name: "Palermo", auditId: "13a19c9d-9291-4345-929a-23497711afc4", file: "", fecha: "21 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 87, salon: 85, cocina: 86, calidad: 89, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "bajo", accionRequerida: "Sostener performance; pulir Salón (85/100)" },
+  { id: "canitas", name: "Cañitas", auditId: "55509143-80da-438d-b768-002e9b2577ed", file: "", fecha: "23 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 71, salon: 78, cocina: 71, calidad: 64, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Calidad (64/100)" },
+  { id: "caballito", name: "Caballito", auditId: "db371219-45f0-4c42-9b88-39c652beb355", file: "", fecha: "23 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 85, salon: 85, cocina: 83, calidad: 86, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "bajo", accionRequerida: "Sostener performance; pulir Cocina (83/100)" },
+  { id: "devoto", name: "Devoto", auditId: "4f757eb9-db6b-4077-8bb7-8ca3c59b2919", file: "", fecha: "23 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 93, salon: 92, cocina: 92, calidad: 95, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "bajo", accionRequerida: "Sostener performance; pulir Salón y Cocina (92/100)" },
+  { id: "nordelta", name: "Nordelta", auditId: "b2f20141-6c86-45ee-b628-a81029de4fcf", file: "", fecha: "24 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 80, salon: 78, cocina: 72, calidad: 90, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "moderado", accionRequerida: "Reforzar Cocina (72/100) y sostener el resto" },
+  { id: "nunez", name: "Núñez", auditId: "ba55e0ea-07ac-4dcb-bd05-6f7d2ef62202", file: "", fecha: "24 de septiembre de 2026", auditores: ["Gabriel", "Diego"], global: 89, salon: 90, cocina: 90, calidad: 88, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "bajo", accionRequerida: "Sostener performance; pulir Calidad (88/100)" },
+  { id: "belgrano", name: "Belgrano", auditId: "665561c2-5ae6-4b7d-95c5-dd88f334d6f6", file: "", fecha: "24 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 71, salon: 71, cocina: 62, calidad: 79, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Cocina (62/100)" },
+]
+
 export async function getDashboardByPeriod(year = 2026, quarter = "Q3"): Promise<DashboardData> {
   // 1. Locations map
   const { data: locsData } = await supabase.from("locations").select("id, name")
@@ -197,8 +212,9 @@ export async function getDashboardByPeriod(year = 2026, quarter = "Q3"): Promise
   const universeLocs = locs.filter((l) => !isExcludedLocation(l.name))
   const universe = Math.max(universeLocs.length, NETWORK_UNIVERSE, audited.length)
   const auditedIds = new Set(audited.map((a) => a.id))
+  const auditedNames = new Set(audited.map((a) => normalizeName(a.name)))
   const pending: PendingLocation[] = universeLocs
-    .filter((l) => !auditedIds.has(l.id))
+    .filter((l) => !auditedIds.has(l.id) && !auditedNames.has(normalizeName(l.name)))
     .map((l) => ({ id: l.id, name: l.name }))
     .sort((a, b) => a.name.localeCompare(b.name))
   const coverage = universe > 0 ? +((audited.length / universe) * 100).toFixed(1) : 0
@@ -493,7 +509,6 @@ export async function getDashboardLocations(year = 2026, quarter = "Q3"): Promis
   }
 
   const chosen = Array.from(bestByLocation.values())
-  if (chosen.length === 0) return []
 
   // 4. Count strengths / non-compliance / observations from audit_responses.
   const auditIds = chosen.map((a) => a.id)
@@ -514,7 +529,7 @@ export async function getDashboardLocations(year = 2026, quarter = "Q3"): Promis
   }
 
   // 5. Map to Location shape.
-  return chosen.map((a) => {
+  const liveLocations = chosen.map((a) => {
     const salon = Math.round(a.salon_score ?? 0)
     const cocina = Math.round(a.cocina_score ?? 0)
     const calidad = Math.round(a.calidad_score ?? 0)
@@ -540,4 +555,11 @@ export async function getDashboardLocations(year = 2026, quarter = "Q3"): Promis
       accionRequerida: deriveAccion(global, salon, cocina, calidad, riesgo),
     }
   })
+
+  if (year === 2026 && quarter === "Q3") {
+    const liveNames = new Set(liveLocations.map((location) => normalizeName(location.name)))
+    return [...liveLocations, ...Q3_2026_SHEETS_FALLBACK.filter((location) => !liveNames.has(normalizeName(location.name)))]
+  }
+
+  return liveLocations
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Camera, Copy, X, AlertCircle, Loader2, ImagePlus } from 'lucide-react'
+import { Camera, Copy, X, AlertCircle, Loader2, ImagePlus, ClipboardCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -119,6 +119,43 @@ export function AuditItem({
       ? item.suggestions[response.value]
       : null
 
+  const visibleStandards = RATING_OPTIONS
+    .filter((option) => option.value !== 0)
+    .flatMap((option) => {
+      const text = item.suggestions?.[option.value]
+      return text ? [{ ...option, text }] : []
+    })
+
+  const standardsPanel = visibleStandards.length > 0 ? (
+    <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50/70 p-3">
+      <div className="flex items-center gap-2 text-sm font-semibold text-blue-900">
+        <ClipboardCheck className="h-4 w-4 shrink-0" />
+        Referencias para calificar
+      </div>
+      <div className="mt-2 space-y-2">
+        {visibleStandards.map((standard) => (
+          <div
+            key={standard.value}
+            className={cn(
+              'rounded-md border px-3 py-2 text-sm leading-5',
+              response.value === standard.value
+                ? 'border-blue-500 bg-white shadow-sm'
+                : 'border-blue-100 bg-white/60'
+            )}
+          >
+            <span className="font-semibold text-foreground">
+              {standard.icon} {standard.label}:
+            </span>{' '}
+            <span className="text-foreground/80">{standard.text}</span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-2 text-xs leading-4 text-blue-800">
+        Estas referencias permanecen visibles antes y después de seleccionar la calificación.
+      </p>
+    </div>
+  ) : null
+
   // Check if observation/photo is required
   const ratingOption = RATING_OPTIONS.find((o) => o.value === response.value)
   const requiresObservation = ratingOption?.requiresObservation ?? false
@@ -166,6 +203,7 @@ export function AuditItem({
           {item.description && (
             <p className="text-sm text-muted-foreground mt-2">{item.description}</p>
           )}
+          {standardsPanel}
         </div>
 
         {response.customLabel && (
@@ -173,20 +211,16 @@ export function AuditItem({
             <RatingSelector value={response.value} onChange={handleRatingChange} />
 
             {currentSuggestion && (
-              <div className="mt-3 p-3 bg-muted rounded-lg">
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm text-muted-foreground flex-1">{currentSuggestion}</p>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleCopySuggestion(currentSuggestion)}
-                    className="shrink-0"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => handleCopySuggestion(currentSuggestion)}
+                className="mt-3 w-full"
+              >
+                <Copy className="mr-2 h-4 w-4" />
+                Copiar referencia elegida en observaciones
+              </Button>
             )}
 
             <div className="mt-3">
@@ -312,21 +346,19 @@ export function AuditItem({
 
       <RatingSelector value={response.value} onChange={handleRatingChange} />
 
+      {standardsPanel}
+
       {currentSuggestion && (
-        <div className="mt-3 p-3 bg-muted rounded-lg">
-          <div className="flex items-start justify-between gap-2">
-            <p className="text-sm text-muted-foreground flex-1">{currentSuggestion}</p>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => handleCopySuggestion(currentSuggestion)}
-              className="shrink-0"
-            >
-              <Copy className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => handleCopySuggestion(currentSuggestion)}
+          className="mt-3 w-full"
+        >
+          <Copy className="mr-2 h-4 w-4" />
+          Copiar referencia elegida en observaciones
+        </Button>
       )}
 
       {response.value !== null && response.value !== 0 && (
@@ -426,6 +458,3 @@ export function AuditItem({
           <p className="text-sm">{errors.join(', ')}</p>
         </div>
       )}
-    </div>
-  )
-}

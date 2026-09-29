@@ -458,3 +458,6 @@ export function AuditItem({
           <p className="text-sm">{errors.join(', ')}</p>
         </div>
       )}
+    </div>
+  )
+}

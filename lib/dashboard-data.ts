@@ -168,13 +168,17 @@ function scopeFor(coverage: number): DashboardData["scope"] {
 // Fixed network universe per spec (18 locales). Used when the DB count differs.
 const NETWORK_UNIVERSE = 18
 
+// Auditorías anuladas para que el local vuelva a figurar como pendiente.
+function isResetAuditLocation(year: number, quarter: string, name: string): boolean {
+  return year === 2026 && quarter === "Q3" && normalizeName(name) === "palermo"
+}
+
 // Snapshot de respaldo de auditorías Q3 2026 confirmadas en la planilla maestra.
 // Se combina con Supabase por nombre de local: los datos en vivo tienen prioridad.
 // Esto evita que la pizarra quede vacía cuando la réplica de Supabase se interrumpe.
 const Q3_2026_SHEETS_FALLBACK: Location[] = [
   { id: "olivos", name: "Olivos", auditId: "23c26898-5698-4951-a678-41e485f09aa2", file: "", fecha: "21 de septiembre de 2026", auditores: ["Auditor 1", "Carlos"], global: 63, salon: 60, cocina: 80, calidad: 50, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Calidad (50/100)" },
   { id: "villa-crespo", name: "Villa Crespo", auditId: "8eb7f0b1-1aa7-4bfe-8f8c-b915f96a5510", file: "", fecha: "21 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 82, salon: 82, cocina: 87, calidad: 78, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "moderado", accionRequerida: "Reforzar Calidad (78/100) y sostener el resto" },
-  { id: "palermo", name: "Palermo", auditId: "13a19c9d-9291-4345-929a-23497711afc4", file: "", fecha: "21 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 87, salon: 85, cocina: 86, calidad: 89, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "bajo", accionRequerida: "Sostener performance; pulir Salón (85/100)" },
   { id: "canitas", name: "Cañitas", auditId: "55509143-80da-438d-b768-002e9b2577ed", file: "", fecha: "23 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 71, salon: 78, cocina: 71, calidad: 64, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Calidad (64/100)" },
   { id: "caballito", name: "Caballito", auditId: "db371219-45f0-4c42-9b88-39c652beb355", file: "", fecha: "23 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 85, salon: 85, cocina: 83, calidad: 86, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "bajo", accionRequerida: "Sostener performance; pulir Cocina (83/100)" },
   { id: "devoto", name: "Devoto", auditId: "4f757eb9-db6b-4077-8bb7-8ca3c59b2919", file: "", fecha: "23 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 93, salon: 92, cocina: 92, calidad: 95, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "bajo", accionRequerida: "Sostener performance; pulir Salón y Cocina (92/100)" },
@@ -210,7 +214,7 @@ export async function getDashboardByPeriod(year = 2026, quarter = "Q3"): Promise
   const allAudits = (rawAudits ?? []) as (AuditRow & { auditor_names: string[] | null })[]
   const validAudits = allAudits.filter((a) => {
     const name = nameById.get(a.location_id)
-    return name && !isExcludedLocation(name)
+    return name && !isExcludedLocation(name) && !isResetAuditLocation(year, quarter, name)
   })
 
   const audited = await getDashboardLocations(year, quarter)
@@ -516,7 +520,10 @@ export async function getDashboardLocations(year = 2026, quarter = "Q3"): Promis
     if (better) bestByLocation.set(a.location_id, a)
   }
 
-  const chosen = Array.from(bestByLocation.values())
+  const chosen = Array.from(bestByLocation.values()).filter((audit) => {
+    const name = nameById.get(audit.location_id)
+    return name ? !isResetAuditLocation(year, quarter, name) : false
+  })
 
   // 4. Count strengths / non-compliance / observations from audit_responses.
   const auditIds = chosen.map((a) => a.id)

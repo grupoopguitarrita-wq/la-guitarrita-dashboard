@@ -172,6 +172,7 @@ const NETWORK_UNIVERSE = 18
 // Se combina con Supabase por nombre de local: los datos en vivo tienen prioridad.
 // Esto evita que la pizarra quede vacía cuando la réplica de Supabase se interrumpe.
 const Q3_2026_SHEETS_FALLBACK: Location[] = [
+  { id: "euskal", name: "Euskal", file: "Auditoria-Total-Euskal-Q3.pdf", pdfUrl: "/informes/Auditoria-Total-Euskal-Q3.pdf", fecha: "28 de septiembre de 2026", auditores: ["Auditor 1", "Carlos"], global: 95, salon: 96, cocina: 91, calidad: 99, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "bajo", accionRequerida: "Sostener performance; pulir Cocina (91/100)" },
   { id: "olivos", name: "Olivos", auditId: "23c26898-5698-4951-a678-41e485f09aa2", file: "", fecha: "21 de septiembre de 2026", auditores: ["Auditor 1", "Carlos"], global: 63, salon: 60, cocina: 80, calidad: 50, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Calidad (50/100)" },
   { id: "lomitas", name: "Lomitas", file: "", fecha: "24 de septiembre de 2026", auditores: ["Auditor 1"], global: 69, salon: 78, cocina: 78, calidad: 52, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Calidad (52/100)" },
   { id: "tigre", name: "Tigre", file: "", fecha: "28 de septiembre de 2026", auditores: ["Auditor 1"], global: 83, salon: 94, cocina: 80, calidad: 75, fortalezas: 0, noCumple: 3, observaciones: 3, riesgo: "moderado", accionRequerida: "Reforzar Calidad (75/100) y sostener Salón" },

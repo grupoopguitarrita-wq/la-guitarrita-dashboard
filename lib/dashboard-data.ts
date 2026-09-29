@@ -178,6 +178,7 @@ function isResetAuditLocation(year: number, quarter: string, name: string): bool
 // Esto evita que la pizarra quede vacía cuando la réplica de Supabase se interrumpe.
 const Q3_2026_SHEETS_FALLBACK: Location[] = [
   { id: "olivos", name: "Olivos", auditId: "23c26898-5698-4951-a678-41e485f09aa2", file: "", fecha: "21 de septiembre de 2026", auditores: ["Auditor 1", "Carlos"], global: 63, salon: 60, cocina: 80, calidad: 50, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Calidad (50/100)" },
+  { id: "lomitas", name: "Lomitas", file: "", fecha: "24 de septiembre de 2026", auditores: ["Auditor 1"], global: 69, salon: 78, cocina: 78, calidad: 52, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Calidad (52/100)" },
   { id: "villa-crespo", name: "Villa Crespo", auditId: "8eb7f0b1-1aa7-4bfe-8f8c-b915f96a5510", file: "", fecha: "21 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 82, salon: 82, cocina: 87, calidad: 78, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "moderado", accionRequerida: "Reforzar Calidad (78/100) y sostener el resto" },
   { id: "canitas", name: "Cañitas", auditId: "55509143-80da-438d-b768-002e9b2577ed", file: "", fecha: "23 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 71, salon: 78, cocina: 71, calidad: 64, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Calidad (64/100)" },
   { id: "caballito", name: "Caballito", auditId: "db371219-45f0-4c42-9b88-39c652beb355", file: "", fecha: "23 de septiembre de 2026", auditores: ["Diego", "Gabriel"], global: 85, salon: 85, cocina: 83, calidad: 86, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "bajo", accionRequerida: "Sostener performance; pulir Cocina (83/100)" },
@@ -190,7 +191,7 @@ const Q3_2026_SHEETS_FALLBACK: Location[] = [
 const FALLBACK_NETWORK_LOCATIONS: PendingLocation[] = [
   "Belgrano", "Caballito", "Colegiales", "Dardo Rocha", "Devoto", "Euskal",
   "Cañitas", "Maschwitz", "Martínez", "Nordelta", "Núñez", "Olivos",
-  "Palermo", "Pilar", "Tigre", "Villa Crespo", "Villa Urquiza", "Villa del Parque",
+  "Palermo", "Pilar", "Tigre", "Villa Crespo", "Villa Urquiza", "Lomitas",
 ].map((name) => ({ id: normalizeName(name), name }))
 
 

@@ -502,5 +502,28 @@ export default function AuditPage() {
     )
   }
 
-  return null
+  // Recover safely from an inconsistent/stale navigation state instead of
+  // leaving the auditor on a blank page. The responses and completed areas
+  // remain intact, so the auditor can continue with another area.
+  if (metadata.locationId) {
+    return (
+      <AreaSelectorScreen
+        metadata={metadata}
+        responses={responses}
+        completedAreas={completedAreas}
+        onSelectArea={handleSelectArea}
+        onViewFinalReport={handleViewFinalReport}
+      />
+    )
+  }
+
+  return (
+    <IntroScreen
+      onStart={handleStartFromIntro}
+      existingDraft={showDraftPrompt ? existingDraft : null}
+      onRestoreDraft={handleRestoreDraft}
+      onDiscardDraft={handleDiscardDraft}
+    />
+  )
+}
 }

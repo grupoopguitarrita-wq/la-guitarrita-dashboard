@@ -15,6 +15,7 @@ function normalizeName(s: string): string {
 
 // Mapa: nombre de local (normalizado) -> URL del informe en Drive.
 const REPORT_LINKS: Record<string, string> = {
+  martinez: "/informes/Auditoria-Total-Martinez-Q3.pdf",
   caballito:
     "https://docs.google.com/document/d/1eRqtTqt5qqSlpCmOryck7V4FLORQ8DR0/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
   euskal:
@@ -35,6 +36,18 @@ const REPORT_LINKS: Record<string, string> = {
     "https://docs.google.com/document/d/1pdwhBn1vCA2WhOUI95FXFBs84vOKTHSI/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
 }
 
+export type ReportFile = { label: string; url: string }
+
+// Informes separados disponibles directamente desde la pizarra.
+const REPORT_FILES: Record<string, ReportFile[]> = {
+  martinez: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Martinez-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Martinez-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Martinez-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Martinez-Q3.pdf" },
+  ],
+}
+
 // Algunos locales usan nombres alternativos en la base. Mapeamos esos alias
 // al nombre canónico que figura como clave en REPORT_LINKS.
 const NAME_ALIASES: Record<string, string> = {
@@ -47,4 +60,11 @@ export function getReportLink(locationName: string): string | null {
   const key = normalizeName(locationName)
   const canonical = NAME_ALIASES[key] ?? key
   return REPORT_LINKS[canonical] ?? null
+}
+
+/** Devuelve todos los PDF separados disponibles para el local. */
+export function getReportFiles(locationName: string): ReportFile[] {
+  const key = normalizeName(locationName)
+  const canonical = NAME_ALIASES[key] ?? key
+  return REPORT_FILES[canonical] ?? []
 }

@@ -17,7 +17,7 @@ import {
 import type { DashboardData } from "@/lib/dashboard-data"
 import { buildDiagnosis } from "@/lib/dashboard/diagnosis"
 import ReportActionPanel from "@/components/dashboard/ReportActionPanel"
-import { getReportLink } from "@/lib/report-links"
+import { getReportFiles, getReportLink } from "@/lib/report-links"
 import HallazgosTab from "@/components/dashboard/tabs/HallazgosTab"
 import CrossAnalysisTab from "@/components/dashboard/cross-analysis/CrossAnalysisTab"
 import AuditoresTab from "@/components/dashboard/tabs/AuditoresTab"
@@ -787,6 +787,7 @@ function Detail({ d, network, onClose, dashboard }: { d: Derived; network: Retur
   const noCumple = findings.filter((f) => f.ratingValue !== null && f.ratingValue < 0)
   const conObs = findings.filter((f) => f.observation && f.observation.trim() !== "")
   const reportLink = getReportLink(d.loc.name)
+  const reportFiles = getReportFiles(d.loc.name)
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 bg-black/50" onClick={onClose} />
@@ -901,7 +902,17 @@ function Detail({ d, network, onClose, dashboard }: { d: Derived; network: Retur
 
           {/* DESCARGAS */}
           <div className="space-y-2">
-            {reportLink ? (
+            {reportFiles.length > 0 ? (
+              <div className="grid grid-cols-1 gap-2">
+                {reportFiles.map((report) => (
+                  <a key={report.url} href={report.url} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-3 bg-[#B5123F] hover:opacity-90 text-white font-semibold rounded-lg transition-opacity">
+                    <FileText className="h-5 w-5" />
+                    {report.label}
+                  </a>
+                ))}
+              </div>
+            ) : reportLink ? (
               <a href={reportLink} target="_blank" rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full py-3 bg-[#B5123F] hover:opacity-90 text-white font-semibold rounded-lg transition-opacity">
                 <FileText className="h-5 w-5" />
@@ -922,4 +933,3 @@ function Detail({ d, network, onClose, dashboard }: { d: Derived; network: Retur
     </div>
   )
 }
-

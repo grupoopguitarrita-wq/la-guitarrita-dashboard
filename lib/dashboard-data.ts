@@ -166,12 +166,13 @@ function scopeFor(coverage: number): DashboardData["scope"] {
  * universe of locations, pending ones, and coverage classification.
  */
 // Fixed network universe per spec (18 locales). Used when the DB count differs.
-const NETWORK_UNIVERSE = 18
+const NETWORK_UNIVERSE = 17
 
 // Snapshot de respaldo de auditorías Q3 2026 confirmadas en la planilla maestra.
 // Se combina con Supabase por nombre de local: los datos en vivo tienen prioridad.
 // Esto evita que la pizarra quede vacía cuando la réplica de Supabase se interrumpe.
 const Q3_2026_SHEETS_FALLBACK: Location[] = [
+  { id: "martinez", name: "Martínez", file: "Auditoria-Total-Martinez-Q3.pdf", pdfUrl: "/informes/Auditoria-Total-Martinez-Q3.pdf", fecha: "28 de septiembre de 2026", auditores: ["Carlos"], global: 86, salon: 84, cocina: 91, calidad: 82, fortalezas: 0, noCumple: 3, observaciones: 3, riesgo: "bajo", accionRequerida: "Sostener performance; pulir Calidad (82/100)" },
   { id: "villa-urquiza", name: "Villa Urquiza", file: "Auditoria-Total-Villa-Urquiza-Q3.pdf", pdfUrl: "/informes/Auditoria-Total-Villa-Urquiza-Q3.pdf", fecha: "21 de septiembre de 2026", auditores: ["Auditor 1"], global: 72, salon: 91, cocina: 68, calidad: 58, fortalezas: 0, noCumple: 7, observaciones: 7, riesgo: "alto", accionRequerida: "Intervención urgente: reforzar Calidad (58/100)" },
   { id: "palermo", name: "Palermo", file: "Auditoria-Total-Palermo-Q3.pdf", pdfUrl: "/informes/Auditoria-Total-Palermo-Q3.pdf", fecha: "28 de septiembre de 2026", auditores: ["Diego"], global: 81, salon: 76, cocina: 82, calidad: 86, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "moderado", accionRequerida: "Reforzar Salón (76/100) y sostener el resto" },
   { id: "euskal", name: "Euskal", file: "Auditoria-Total-Euskal-Q3.pdf", pdfUrl: "/informes/Auditoria-Total-Euskal-Q3.pdf", fecha: "28 de septiembre de 2026", auditores: ["Auditor 1", "Carlos"], global: 95, salon: 96, cocina: 91, calidad: 99, fortalezas: 0, noCumple: 0, observaciones: 0, riesgo: "bajo", accionRequerida: "Sostener performance; pulir Cocina (91/100)" },
@@ -188,7 +189,7 @@ const Q3_2026_SHEETS_FALLBACK: Location[] = [
 ]
 
 const FALLBACK_NETWORK_LOCATIONS: PendingLocation[] = [
-  "Belgrano", "Caballito", "Colegiales", "Dardo Rocha", "Devoto", "Euskal",
+  "Belgrano", "Caballito", "Colegiales", "Devoto", "Euskal",
   "Cañitas", "Maschwitz", "Martínez", "Nordelta", "Núñez", "Olivos",
   "Palermo", "Pilar", "Tigre", "Villa Crespo", "Villa Urquiza", "Lomitas",
 ].map((name) => ({ id: normalizeName(name), name }))
@@ -221,7 +222,9 @@ export async function getDashboardByPeriod(year = 2026, quarter = "Q3"): Promise
 
   // 3. Universe & coverage (non-test locations; floor at fixed network size).
   const universeLocs = locs.filter((l) => !isExcludedLocation(l.name))
-  const effectiveUniverseLocs = universeLocs.length > 0 ? universeLocs : FALLBACK_NETWORK_LOCATIONS
+  // Dardo Rocha es la dirección histórica del local Martínez, no otro local.
+  const canonicalUniverseLocs = universeLocs.filter((l) => normalizeName(l.name) !== "dardorocha")
+  const effectiveUniverseLocs = canonicalUniverseLocs.length > 0 ? canonicalUniverseLocs : FALLBACK_NETWORK_LOCATIONS
   const universe = Math.max(effectiveUniverseLocs.length, NETWORK_UNIVERSE, audited.length)
   const auditedIds = new Set(audited.map((a) => a.id))
   const auditedNames = new Set(audited.map((a) => normalizeName(a.name)))

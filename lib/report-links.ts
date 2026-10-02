@@ -16,6 +16,10 @@ function normalizeName(s: string): string {
 // Mapa: nombre de local (normalizado) -> URL del informe en Drive.
 const REPORT_LINKS: Record<string, string> = {
   martinez: "/informes/Auditoria-Total-Martinez-Q3.pdf",
+  villaurquiza: "/informes/Auditoria-Total-Villa-Urquiza-Q3.pdf",
+  belgrano: "/informes/Auditoria-Total-Belgrano-Q3.pdf",
+  canitas: "/informes/Auditoria-Total-Canitas-Q3.pdf",
+  lomitas: "/informes/Auditoria-Total-Lomitas-Q3.pdf",
   caballito:
     "https://docs.google.com/document/d/1eRqtTqt5qqSlpCmOryck7V4FLORQ8DR0/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
   euskal:
@@ -45,6 +49,30 @@ const REPORT_FILES: Record<string, ReportFile[]> = {
     { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Martinez-Q3.pdf" },
     { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Martinez-Q3.pdf" },
     { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Martinez-Q3.pdf" },
+  ],
+  villaurquiza: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Villa-Urquiza-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Villa-Urquiza-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Villa-Urquiza-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Villa-Urquiza-Q3.pdf" },
+  ],
+  belgrano: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Belgrano-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Belgrano-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Belgrano-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Belgrano-Q3.pdf" },
+  ],
+  canitas: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Canitas-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Canitas-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Canitas-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Canitas-Q3.pdf" },
+  ],
+  lomitas: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Lomitas-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Lomitas-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Lomitas-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Lomitas-Q3.pdf" },
   ],
 }
 

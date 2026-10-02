@@ -22,30 +22,75 @@ const REPORT_LINKS: Record<string, string> = {
   lomitas: "/informes/Auditoria-Total-Lomitas-Q3.pdf",
   colegiales: "/informes/Auditoria-Total-Colegiales-Q3.pdf",
   pilar: "/informes/Auditoria-Total-Pilar-Q3.pdf",
-  caballito:
-    "https://docs.google.com/document/d/1eRqtTqt5qqSlpCmOryck7V4FLORQ8DR0/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
-  euskal:
-    "https://docs.google.com/document/d/1mASa_zg8w7uCUopohHGCfzTkBlPcP0xu/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
-  nunez:
-    "https://docs.google.com/document/d/15ggfrhnboTKZdMCSINXgt2UIMMNrwM90/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
-  olivos:
-    "https://docs.google.com/document/d/1r9X1on_mUb1ATGbGd9S00Ib46cOfILOT/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
-  palermo:
-    "https://docs.google.com/document/d/13zCJns9--uJkggG50hjlDPUL9xtdIGRv/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
-  nordelta:
-    "https://docs.google.com/document/d/1BhcUihYRy9_bokpTzqIKaLo1II0aUc5X/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
-  villacrespo:
-    "https://docs.google.com/document/d/1L6lValWJH0CZibT74tvyxdGe9aGuR_qw/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
-  tigre:
-    "https://docs.google.com/document/d/1In0RkW1jQpUFm9ILrFZNLDJ4sUp8wEcc/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
-  devoto:
-    "https://docs.google.com/document/d/1pdwhBn1vCA2WhOUI95FXFBs84vOKTHSI/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
+  caballito: "/informes/Auditoria-Total-Caballito-Q3.pdf",
+  euskal: "/informes/Auditoria-Total-Euskal-Q3.pdf",
+  nunez: "/informes/Auditoria-Total-Nunez-Q3.pdf",
+  olivos: "/informes/Auditoria-Total-Olivos-Q3.pdf",
+  palermo: "/informes/Auditoria-Total-Palermo-Q3.pdf",
+  nordelta: "/informes/Auditoria-Total-Nordelta-Q3.pdf",
+  villacrespo: "/informes/Auditoria-Total-Villa-Crespo-Q3.pdf",
+  tigre: "/informes/Auditoria-Total-Tigre-Q3.pdf",
+  devoto: "/informes/Auditoria-Total-Devoto-Q3.pdf",
 }
 
 export type ReportFile = { label: string; url: string }
 
 // Informes separados disponibles directamente desde la pizarra.
 const REPORT_FILES: Record<string, ReportFile[]> = {
+  caballito: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Caballito-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Caballito-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Caballito-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Caballito-Q3.pdf" },
+  ],
+  devoto: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Devoto-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Devoto-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Devoto-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Devoto-Q3.pdf" },
+  ],
+  euskal: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Euskal-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Euskal-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Euskal-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Euskal-Q3.pdf" },
+  ],
+  nordelta: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Nordelta-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Nordelta-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Nordelta-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Nordelta-Q3.pdf" },
+  ],
+  nunez: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Nunez-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Nunez-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Nunez-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Nunez-Q3.pdf" },
+  ],
+  olivos: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Olivos-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Olivos-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Olivos-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Olivos-Q3.pdf" },
+  ],
+  palermo: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Palermo-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Palermo-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Palermo-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Palermo-Q3.pdf" },
+  ],
+  tigre: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Tigre-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Tigre-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Tigre-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Tigre-Q3.pdf" },
+  ],
+  villacrespo: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Villa-Crespo-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Villa-Crespo-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Villa-Crespo-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Villa-Crespo-Q3.pdf" },
+  ],
   martinez: [
     { label: "Informe Total", url: "/informes/Auditoria-Total-Martinez-Q3.pdf" },
     { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Martinez-Q3.pdf" },

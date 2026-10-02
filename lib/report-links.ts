@@ -15,6 +15,7 @@ function normalizeName(s: string): string {
 
 // Mapa: nombre de local (normalizado) -> URL del informe en Drive.
 const REPORT_LINKS: Record<string, string> = {
+  maschwitz: "/informes/Auditoria-Total-Maschwitz-Q3.pdf",
   martinez: "/informes/Auditoria-Total-Martinez-Q3.pdf",
   villaurquiza: "/informes/Auditoria-Total-Villa-Urquiza-Q3.pdf",
   belgrano: "/informes/Auditoria-Total-Belgrano-Q3.pdf",
@@ -37,6 +38,12 @@ export type ReportFile = { label: string; url: string }
 
 // Informes separados disponibles directamente desde la pizarra.
 const REPORT_FILES: Record<string, ReportFile[]> = {
+  maschwitz: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Maschwitz-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Maschwitz-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Maschwitz-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Maschwitz-Q3.pdf" },
+  ],
   caballito: [
     { label: "Informe Total", url: "/informes/Auditoria-Total-Caballito-Q3.pdf" },
     { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Caballito-Q3.pdf" },

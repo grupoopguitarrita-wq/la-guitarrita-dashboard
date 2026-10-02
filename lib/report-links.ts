@@ -20,6 +20,8 @@ const REPORT_LINKS: Record<string, string> = {
   belgrano: "/informes/Auditoria-Total-Belgrano-Q3.pdf",
   canitas: "/informes/Auditoria-Total-Canitas-Q3.pdf",
   lomitas: "/informes/Auditoria-Total-Lomitas-Q3.pdf",
+  colegiales: "/informes/Auditoria-Total-Colegiales-Q3.pdf",
+  pilar: "/informes/Auditoria-Total-Pilar-Q3.pdf",
   caballito:
     "https://docs.google.com/document/d/1eRqtTqt5qqSlpCmOryck7V4FLORQ8DR0/edit?usp=drive_link&ouid=115755590530852117154&rtpof=true&sd=true",
   euskal:
@@ -73,6 +75,18 @@ const REPORT_FILES: Record<string, ReportFile[]> = {
     { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Lomitas-Q3.pdf" },
     { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Lomitas-Q3.pdf" },
     { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Lomitas-Q3.pdf" },
+  ],
+  colegiales: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Colegiales-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Colegiales-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Colegiales-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Colegiales-Q3.pdf" },
+  ],
+  pilar: [
+    { label: "Informe Total", url: "/informes/Auditoria-Total-Pilar-Q3.pdf" },
+    { label: "Informe de Salón", url: "/informes/Auditoria-Salon-Pilar-Q3.pdf" },
+    { label: "Informe de Cocina", url: "/informes/Auditoria-Cocina-Pilar-Q3.pdf" },
+    { label: "Informe de Calidad", url: "/informes/Auditoria-Calidad-Pilar-Q3.pdf" },
   ],
 }
 

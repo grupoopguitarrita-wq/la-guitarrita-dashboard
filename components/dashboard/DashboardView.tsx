@@ -624,13 +624,13 @@ export default function DashboardView({ dashboard, initialYear, initialQuarter }
         {dashboard.pending.length > 0 && (
           <div className="rounded-xl border border-gray-200 bg-white p-4">
             <h3 className="text-sm font-semibold text-gray-900">Locales pendientes de auditoría ({dashboard.pending.length})</h3>
-            <p className="text-xs text-gray-500 mb-3">Forman parte del universo del trimestre pero aún no registran auditoría Q2 2026.</p>
+            <p className="text-xs text-gray-500 mb-3">Forman parte del universo del trimestre pero aún no registran auditoría {initialQuarter} {initialYear}.</p>
             <div className="flex flex-wrap gap-2">
               {dashboard.pending.map((p) => (
                 <span key={p.id} className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs text-gray-700">
                   <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
                   {p.name}
-                  <span className="text-[10px] uppercase text-amber-600">Pendiente Q2</span>
+                  <span className="text-[10px] uppercase text-amber-600">Pendiente {initialQuarter}</span>
                 </span>
               ))}
             </div>

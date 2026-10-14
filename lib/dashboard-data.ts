@@ -165,8 +165,13 @@ function scopeFor(coverage: number): DashboardData["scope"] {
  * Full dashboard payload: audited locales (real Supabase scores), the expected
  * universe of locations, pending ones, and coverage classification.
  */
-// Fixed network universe per spec (18 locales). Used when the DB count differs.
+// Base histórico de la red: 17 locales. Recoleta y Lanús se suman solo al Q4 2026.
 const NETWORK_UNIVERSE = 17
+
+const Q4_2026_PLANNED_LOCATIONS: PendingLocation[] = [
+  { id: "recoleta", name: "Recoleta" },
+  { id: "lanus", name: "Lanús" },
+]
 
 // Snapshot de respaldo de auditorías Q3 2026 confirmadas en la planilla maestra.
 // Se combina con Supabase por nombre de local: los datos en vivo tienen prioridad.
@@ -223,11 +228,23 @@ export async function getDashboardByPeriod(year = 2026, quarter = "Q3"): Promise
 
   const audited = await getDashboardLocations(year, quarter)
 
-  // 3. Universe & coverage (non-test locations; floor at fixed network size).
+  // 3. Universe & coverage. Recoleta y Lanús se incorporan al padrón únicamente para Q4 2026.
   const universeLocs = locs.filter((l) => !isExcludedLocation(l.name))
   // Dardo Rocha es la dirección histórica del local Martínez, no otro local.
   const canonicalUniverseLocs = universeLocs.filter((l) => normalizeName(l.name) !== "dardorocha")
-  const effectiveUniverseLocs = canonicalUniverseLocs.length > 0 ? canonicalUniverseLocs : FALLBACK_NETWORK_LOCATIONS
+  const plannedNames = new Set(Q4_2026_PLANNED_LOCATIONS.map((l) => normalizeName(l.name)))
+  const baseUniverseLocs = year === 2026
+    ? canonicalUniverseLocs.filter((l) => !plannedNames.has(normalizeName(l.name)))
+    : canonicalUniverseLocs
+  const historicalUniverse = baseUniverseLocs.length > 0 ? baseUniverseLocs : FALLBACK_NETWORK_LOCATIONS
+  const effectiveUniverseLocs = year === 2026 && quarter === "Q4"
+    ? [
+        ...historicalUniverse,
+        ...Q4_2026_PLANNED_LOCATIONS.filter(
+          (planned) => !historicalUniverse.some((l) => normalizeName(l.name) === normalizeName(planned.name)),
+        ),
+      ]
+    : historicalUniverse
   const universe = Math.max(effectiveUniverseLocs.length, NETWORK_UNIVERSE, audited.length)
   const auditedIds = new Set(audited.map((a) => a.id))
   const auditedNames = new Set(audited.map((a) => normalizeName(a.name)))

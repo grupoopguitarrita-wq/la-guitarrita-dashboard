@@ -124,9 +124,7 @@ export const AUDITOR_OPTIONS = [
   'GABRIEL',
   'DIEGO',
   'CHRISTIAN',
-  'FACUNDO',
   'AUDITOR 1',
-  'AUDITOR 2',
 ] as const
 
 export const QUARTER_OPTIONS: AuditQuarter[] = ['Q1', 'Q2', 'Q3', 'Q4']

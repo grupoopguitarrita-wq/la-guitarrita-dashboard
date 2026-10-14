@@ -35,13 +35,25 @@ export function MetadataScreen({
   const [error, setError] = useState<string | null>(null)
 
   const [locationId, setLocationId] = useState(initialMetadata.locationId)
-  // Support both single and multiple auditors
+  // Support both saved audits and an editable Auditor 1 name.
+  const initialAuditorNames = initialMetadata.auditorNames?.length > 0
+    ? initialMetadata.auditorNames
+    : initialMetadata.auditorName
+      ? [initialMetadata.auditorName]
+      : []
   const [auditorNames, setAuditorNames] = useState<string[]>(
-    initialMetadata.auditorNames?.length > 0
-      ? initialMetadata.auditorNames
-      : initialMetadata.auditorName
-        ? [initialMetadata.auditorName]
-        : []
+    initialAuditorNames.filter((name) => name !== 'AUDITOR 1')
+  )
+  const [auditor1Selected, setAuditor1Selected] = useState(
+    initialAuditorNames.includes('AUDITOR 1')
+  )
+  const [auditor1Name, setAuditor1Name] = useState(
+    initialAuditorNames.includes('AUDITOR 1') &&
+      initialMetadata.auditorName &&
+      initialMetadata.auditorName !== 'AUDITOR 1' &&
+      !initialAuditorNames.includes(initialMetadata.auditorName)
+      ? initialMetadata.auditorName
+      : ''
   )
   const [auditDate, setAuditDate] = useState(
     initialMetadata.auditDate || getLocalDateString()
@@ -51,6 +63,10 @@ export function MetadataScreen({
   )
 
   const handleAddAuditor = (auditor: string) => {
+    if (auditor === 'AUDITOR 1') {
+      setAuditor1Selected(true)
+      return
+    }
     if (!auditorNames.includes(auditor)) {
       setAuditorNames([...auditorNames, auditor])
     }
@@ -61,7 +77,10 @@ export function MetadataScreen({
   }
 
   // Get available auditors (those not already selected)
-  const availableAuditors = AUDITOR_OPTIONS.filter(a => !auditorNames.includes(a))
+  const availableAuditors = [
+    ...AUDITOR_OPTIONS.filter(a => a !== 'AUDITOR 1' && !auditorNames.includes(a)),
+    ...(!auditor1Selected ? ['AUDITOR 1'] : []),
+  ]
 
   useEffect(() => {
     async function loadLocations() {
@@ -82,7 +101,16 @@ export function MetadataScreen({
 
   const selectedLocation = locations.find((l) => l.id === locationId)
 
-  const canContinue = locationId && auditorNames.length > 0 && auditDate && auditQuarter
+  const selectedAuditors = [
+    ...auditorNames,
+    ...(auditor1Selected && auditor1Name.trim() ? [auditor1Name.trim()] : []),
+  ]
+  const canContinue =
+    locationId &&
+    selectedAuditors.length > 0 &&
+    (!auditor1Selected || auditor1Name.trim().length > 0) &&
+    auditDate &&
+    auditQuarter
 
   const handleContinue = () => {
     if (!canContinue || !selectedLocation || !auditQuarter) return
@@ -91,8 +119,8 @@ export function MetadataScreen({
       locationId,
       locationName: selectedLocation.name,
       // Keep auditorName for backward compatibility (use first auditor)
-      auditorName: auditorNames[0] || '',
-      auditorNames,
+      auditorName: selectedAuditors[0] || '',
+      auditorNames: selectedAuditors,
       auditDate,
       auditQuarter,
     })
@@ -171,28 +199,58 @@ export function MetadataScreen({
               </div>
             )}
             
+            {auditor1Selected && (
+              <div className="flex gap-2 mb-2">
+                <Input
+                  value={auditor1Name}
+                  onChange={(e) => setAuditor1Name(e.target.value)}
+                  placeholder="Escribí el nombre del Auditor 1"
+                  aria-label="Nombre del Auditor 1"
+                  className="h-12"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label="Quitar Auditor 1"
+                  onClick={() => {
+                    setAuditor1Selected(false)
+                    setAuditor1Name('')
+                  }}
+                  className="h-12 w-12 shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+
             {/* Add auditor dropdown */}
             {availableAuditors.length > 0 && (
               <Select value="" onValueChange={handleAddAuditor}>
                 <SelectTrigger className="w-full h-12">
-                  <SelectValue placeholder={auditorNames.length > 0 ? "Agregar otro auditor..." : "Seleccionar auditor..."} />
+                  <SelectValue placeholder={selectedAuditors.length > 0 ? "Agregar otro auditor..." : "Seleccionar auditor..."} />
                 </SelectTrigger>
                 <SelectContent>
                   {availableAuditors.map((auditor) => (
                     <SelectItem key={auditor} value={auditor}>
                       <div className="flex items-center gap-2">
                         <Plus className="w-4 h-4" />
-                        {auditor}
+                        {auditor === 'AUDITOR 1' ? 'AUDITOR 1 (escribir nombre)' : auditor}
                       </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             )}
-            
-            {auditorNames.length === 0 && (
+
+            {selectedAuditors.length === 0 && (
               <p className="text-xs text-muted-foreground mt-1">
                 Seleccione al menos un auditor
+              </p>
+            )}
+            {auditor1Selected && !auditor1Name.trim() && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Escribí el nombre del Auditor 1 para continuar
               </p>
             )}
           </Field>

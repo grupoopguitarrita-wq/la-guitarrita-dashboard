@@ -232,11 +232,9 @@ export async function getDashboardByPeriod(year = 2026, quarter = "Q3"): Promise
   const universeLocs = locs.filter((l) => !isExcludedLocation(l.name))
   // Dardo Rocha es la dirección histórica del local Martínez, no otro local.
   const canonicalUniverseLocs = universeLocs.filter((l) => normalizeName(l.name) !== "dardorocha")
-  const plannedNames = new Set(Q4_2026_PLANNED_LOCATIONS.map((l) => normalizeName(l.name)))
-  const baseUniverseLocs = year === 2026
-    ? canonicalUniverseLocs.filter((l) => !plannedNames.has(normalizeName(l.name)))
-    : canonicalUniverseLocs
-  const historicalUniverse = baseUniverseLocs.length > 0 ? baseUniverseLocs : FALLBACK_NETWORK_LOCATIONS
+  const historicalUniverse = year === 2026
+    ? FALLBACK_NETWORK_LOCATIONS
+    : canonicalUniverseLocs.length > 0 ? canonicalUniverseLocs : FALLBACK_NETWORK_LOCATIONS
   const effectiveUniverseLocs = year === 2026 && quarter === "Q4"
     ? [
         ...historicalUniverse,

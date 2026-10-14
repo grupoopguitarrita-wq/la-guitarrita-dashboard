@@ -4,6 +4,7 @@ import type { AuditMetadata, AuditResponses } from '@/types/audit'
 import { AUDIT_STRUCTURE } from '@/data/audit-structure'
 import { calculateGlobalScores } from '@/lib/audit-scoring'
 import { getGlobalLabel, getRatingLabel } from '@/types/audit'
+import { getLocationsCatalog } from '@/lib/locations-catalog'
 
 export type SyncStatus = 'synced' | 'pending_sync' | 'preview_dry_run'
 
@@ -117,11 +118,27 @@ export async function syncSubmittedAudit(input: SubmittedAuditSyncInput): Promis
   // uses UUID primary keys. Resolve the canonical UUID before writing the audit.
   const { data: locations, error: locationsError } = await supabase.from('locations').select('id, name')
   if (locationsError) throw locationsError
-  const requestedName = normalizeName(input.metadata.locationName || input.metadata.locationId)
-  const location = locations?.find((candidate) =>
+  const requestedValue = input.metadata.locationName || input.metadata.locationId
+  const requestedName = normalizeName(requestedValue)
+  let location = locations?.find((candidate) =>
     candidate.id === input.metadata.locationId || normalizeName(candidate.name) === requestedName,
   )
-  if (!location) throw new Error(`location_not_found:${input.metadata.locationName || input.metadata.locationId}`)
+  if (!location) {
+    const catalogLocation = getLocationsCatalog().find((candidate) =>
+      candidate.id === input.metadata.locationId || normalizeName(candidate.name) === requestedName,
+    )
+    if (!catalogLocation) throw new Error(`location_not_found:${requestedValue}`)
+
+    // Sheets is the primary audit record. If a catalog location is not yet
+    // mirrored in Supabase, create its registry row before syncing the scores.
+    const createdLocation = await supabase
+      .from('locations')
+      .insert({ name: catalogLocation.name })
+      .select('id, name')
+      .single()
+    if (createdLocation.error) throw createdLocation.error
+    location = createdLocation.data
+  }
 
   payload.audit.location_id = location.id
 

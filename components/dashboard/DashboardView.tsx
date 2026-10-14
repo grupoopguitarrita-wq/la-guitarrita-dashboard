@@ -122,12 +122,34 @@ export default function DashboardView({ dashboard, initialYear, initialQuarter }
             </label>
             <button type="submit" className="rounded-md bg-[#B5123F] px-4 py-2 text-sm font-semibold text-white">Aplicar filtros</button>
           </form>
-          <div className="flex flex-1 items-center justify-center p-8 text-center">
-            <div>
-              <Activity className="mx-auto h-10 w-10 text-gray-300" />
-              <p className="mt-3 text-gray-600">Aún no hay auditorías {initialQuarter}{" "}{initialYear} enviadas con resultados cargados.</p>
+          <section className="rounded-xl border border-gray-200 bg-white p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                  <Activity className="h-4 w-4 text-amber-500" />
+                  Aún no hay auditorías {initialQuarter}{" "}{initialYear} enviadas con resultados cargados.
+                </div>
+                <p className="mt-1 text-sm text-gray-500">
+                  {dashboard.audited.length} de {dashboard.universe} locales auditados · {dashboard.coverage}% de cobertura
+                </p>
+              </div>
+              <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
+                {dashboard.periodStatus}
+              </span>
             </div>
-          </div>
+            {dashboard.pending.length > 0 && (
+              <div className="mt-5 border-t border-gray-100 pt-4">
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Locales pendientes de auditoría</h2>
+                <div className="flex flex-wrap gap-2">
+                  {dashboard.pending.map((local) => (
+                    <span key={local.id} className="rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-sm text-gray-700">
+                      {local.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
         </main>
       </div>
     )

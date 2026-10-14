@@ -45,6 +45,20 @@ type AppStep =
   | 'final-report' 
   | 'success'
 
+function createInitialMetadata(): AuditMetadata {
+  const auditDate = getLocalDateString()
+  const month = Number(auditDate.slice(5, 7))
+  const quarter = Math.ceil(month / 3) as 1 | 2 | 3 | 4
+  return {
+    locationId: '',
+    locationName: '',
+    auditorName: '',
+    auditorNames: [],
+    auditDate,
+    auditQuarter: `Q${quarter}`,
+  }
+}
+
 export default function AuditPage() {
   // Navigation state
   const [appStep, setAppStep] = useState<AppStep>('intro')
@@ -54,14 +68,7 @@ export default function AuditPage() {
 
   // Audit state
   const [auditId, setAuditId] = useState<string | null>(null)
-  const [metadata, setMetadata] = useState<AuditMetadata>({
-    locationId: '',
-    locationName: '',
-    auditorName: '',
-    auditorNames: [],
-    auditDate: getLocalDateString(),
-    auditQuarter: 'Q1',
-  })
+  const [metadata, setMetadata] = useState<AuditMetadata>(createInitialMetadata)
   const [responses, setResponses] = useState<AuditResponses>({})
   const [finalScores, setFinalScores] = useState<GlobalScores | null>(null)
   
@@ -361,14 +368,7 @@ export default function AuditPage() {
     setCategoryIndex(0)
     setCompletedAreas([])
     setAuditId(null)
-    setMetadata({
-      locationId: '',
-      locationName: '',
-      auditorName: '',
-      auditorNames: [],
-      auditDate: getLocalDateString(),
-      auditQuarter: 'Q1',
-    })
+    setMetadata(createInitialMetadata())
     setResponses({})
     setFinalScores(null)
     setValidationErrors({})

@@ -168,7 +168,8 @@ function scopeFor(coverage: number): DashboardData["scope"] {
 // Base histórico de la red: 17 locales. Recoleta y Lanús se suman solo al Q4 2026.
 const NETWORK_UNIVERSE = 17
 
-const Q4_2026_PLANNED_LOCATIONS: PendingLocation[] = [
+const NEW_AUDIT_LOCATIONS: PendingLocation[] = [
+  { id: "san-isidro", name: "San Isidro" },
   { id: "recoleta", name: "Recoleta" },
   { id: "lanus", name: "Lanús" },
 ]
@@ -232,13 +233,14 @@ export async function getDashboardByPeriod(year = 2026, quarter = "Q3"): Promise
   const universeLocs = locs.filter((l) => !isExcludedLocation(l.name))
   // Dardo Rocha es la dirección histórica del local Martínez, no otro local.
   const canonicalUniverseLocs = universeLocs.filter((l) => normalizeName(l.name) !== "dardorocha")
-  const historicalUniverse = year === 2026
+  const historicalUniverse = year >= 2026
     ? FALLBACK_NETWORK_LOCATIONS
     : canonicalUniverseLocs.length > 0 ? canonicalUniverseLocs : FALLBACK_NETWORK_LOCATIONS
-  const effectiveUniverseLocs = year === 2026 && quarter === "Q4"
+  const includeNewLocations = (year === 2026 && quarter === "Q4") || year >= 2027
+  const effectiveUniverseLocs = includeNewLocations
     ? [
         ...historicalUniverse,
-        ...Q4_2026_PLANNED_LOCATIONS.filter(
+        ...NEW_AUDIT_LOCATIONS.filter(
           (planned) => !historicalUniverse.some((l) => normalizeName(l.name) === normalizeName(planned.name)),
         ),
       ]
